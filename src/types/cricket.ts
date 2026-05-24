@@ -179,6 +179,7 @@ export interface Match {
   superOver?: [Innings, Innings];
   currentInnings: 0 | 1;
   complete: boolean;
+  activeScorerId?: string;
   winner: string;
   margin: string;
   tossWinner: string;

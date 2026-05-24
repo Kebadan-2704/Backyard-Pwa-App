@@ -11,6 +11,7 @@ interface AppState {
   // Settings
   settings: AppSettings;
   updateSettings: (partial: Partial<AppSettings>) => void;
+  deviceId: string;
 
   // Toasts
   toasts: ToastMessage[];
@@ -41,6 +42,7 @@ export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
       settings: DEFAULT_APP_SETTINGS,
+      deviceId: Math.random().toString(36).substring(2, 15),
       updateSettings: (partial) =>
         set((state) => ({
           settings: { ...state.settings, ...partial },
@@ -82,6 +84,7 @@ export const useAppStore = create<AppState>()(
       name: 'cricket-app-settings',
       partialize: (state) => ({
         settings: state.settings,
+        deviceId: state.deviceId,
         isFirstRun: state.isFirstRun,
         installDismissed: state.installDismissed,
       }),

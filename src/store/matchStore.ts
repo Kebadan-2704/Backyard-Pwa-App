@@ -19,6 +19,7 @@ import { checkBatterMilestones, checkBowlerMilestones, checkTeamMilestones, chec
 import { generateCommentary, generateSituation } from '../utils/commentary';
 import { syncLiveMatch } from '../lib/firebase';
 import { useStatsStore } from './statsStore';
+import { useAppStore } from './appStore';
 
 export interface MatchState {
   match: Match | null;
@@ -224,6 +225,7 @@ export const useMatchStore = create<MatchState>()(
           config.matchType, config.pitchCondition,
           config.umpires, config.seriesName,
         );
+        m.activeScorerId = useAppStore.getState().deviceId;
         set({ match: m, isFreeHit: false, pendingMilestones: [], lastOverSummary: null, lastCommentary: '', situationText: '' });
       },
 

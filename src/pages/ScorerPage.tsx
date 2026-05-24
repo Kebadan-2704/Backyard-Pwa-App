@@ -11,9 +11,9 @@ import ResultModal from '../components/modals/ResultModal';
 import ScorecardModal from '../components/modals/ScorecardModal';
 import DLSModal from '../components/modals/DLSModal';
 import CelebrationOverlay from '../components/CelebrationOverlay';
-import { useState } from 'react';
-import { Play, CloudRain, DownloadCloud } from 'lucide-react';
-import { fetchMatch } from '../lib/firebase';
+import { useState, useEffect } from 'react';
+import { Play, CloudRain, DownloadCloud, AlertTriangle } from 'lucide-react';
+import { fetchMatch, listenToActiveScorer } from '../lib/firebase';
 
 export default function ScorerPage() {
   const navigate = useNavigate();
@@ -37,6 +37,33 @@ export default function ScorerPage() {
   const [isImporting, setIsImporting] = useState(false);
   
   const resumeMatch = useMatchStore((s) => s.resumeMatch);
+  
+  const deviceId = useAppStore((s) => s.deviceId);
+  const [remoteScorerId, setRemoteScorerId] = useState<string | undefined>(match?.activeScorerId);
+  const [isTakingOver, setIsTakingOver] = useState(false);
+
+  useEffect(() => {
+    if (match) {
+      setRemoteScorerId(match.activeScorerId);
+      return listenToActiveScorer(match.id.toString(), (id) => {
+        setRemoteScorerId(id);
+      });
+    }
+  }, [match?.id]);
+
+  const isActiveScorer = !remoteScorerId || remoteScorerId === deviceId;
+
+  async function handleTakeOverLive() {
+    if (!match) return;
+    setIsTakingOver(true);
+    const m = await fetchMatch(match.id.toString());
+    setIsTakingOver(false);
+    if (m) {
+      m.activeScorerId = deviceId;
+      resumeMatch(m);
+      setRemoteScorerId(deviceId);
+    }
+  }
 
   async function handleImport() {
     if (!importCode.trim()) return;
@@ -44,6 +71,7 @@ export default function ScorerPage() {
     const m = await fetchMatch(importCode.trim());
     setIsImporting(false);
     if (m) {
+      m.activeScorerId = deviceId;
       resumeMatch(m);
       setImportCode('');
     } else {
@@ -95,9 +123,26 @@ export default function ScorerPage() {
   const showBowlerSelectForced = needsBowler && !match.complete && inn.wickets < match.settings.maxWickets;
 
   return (
-    <div className="scoring-section" style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
+    <div className="scoring-section">
       
-      <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px', paddingBottom: '40px' }}>
+      {!isActiveScorer && !match.complete && (
+        <div style={{ padding: '12px 20px', background: 'rgba(231, 76, 60, 0.15)', borderBottom: '1px solid var(--leather)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--leather)' }}>
+            <AlertTriangle size={18} />
+            <span style={{ fontSize: 13, fontWeight: 600 }}>Another device is currently scoring.</span>
+          </div>
+          <button 
+            onClick={handleTakeOverLive}
+            disabled={isTakingOver}
+            className="btn-primary-small"
+            style={{ padding: '6px 12px', fontSize: 12, margin: 0, width: 'auto' }}
+          >
+            {isTakingOver ? 'SYNCING...' : 'TAKE OVER'}
+          </button>
+        </div>
+      )}
+
+      <div className="scoreboard-container">
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
           <button 
             onClick={() => setShowDLS(true)}
@@ -114,7 +159,7 @@ export default function ScorerPage() {
         <Scoreboard />
       </div>
       
-      <div style={{ flexShrink: 0, padding: '12px 16px', background: 'var(--bg-nav)', borderTop: '1px solid var(--border)', boxShadow: '0 -4px 20px rgba(0,0,0,0.3)', paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)' }}>
+      <div className="actionpad-container">
         <ActionPad 
           onWicket={() => setShowWicketModal(true)} 
           onEndInnings={() => {
@@ -122,7 +167,7 @@ export default function ScorerPage() {
               endInnings();
             }
           }}
-          disabled={showBatterSelectForced || showBowlerSelectForced || match.complete} 
+          disabled={!isActiveScorer || showBatterSelectForced || showBowlerSelectForced || match.complete} 
         />
       </div>
 

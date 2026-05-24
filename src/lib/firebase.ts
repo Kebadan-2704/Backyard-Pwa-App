@@ -50,6 +50,22 @@ export function subscribeToMatch(matchId: string, callback: (data: Match | null)
 }
 
 /**
+ * Listens only to the activeScorerId to detect handovers without infinite loops
+ */
+export function listenToActiveScorer(matchId: string, callback: (scorerId: string) => void) {
+  if (!db) {
+    return () => {};
+  }
+  const scorerRef = ref(db, `live_matches/${matchId}/activeScorerId`);
+  onValue(scorerRef, (snapshot) => {
+    if (snapshot.exists()) {
+      callback(snapshot.val());
+    }
+  });
+  return () => off(scorerRef);
+}
+
+/**
  * Fetches a live match once (for importing/taking over scoring)
  */
 export async function fetchMatch(matchId: string): Promise<Match | null> {

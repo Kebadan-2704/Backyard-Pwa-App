@@ -7,6 +7,7 @@ import './Scoreboard.css';
 export default function Scoreboard() {
   const match = useMatchStore((s) => s.match);
   const isFreeHit = useMatchStore((s) => s.isFreeHit);
+  const swapBatters = useMatchStore((s) => s.swapBatters);
   const lastCommentary = useMatchStore((s) => s.lastCommentary);
   const situationText = useMatchStore((s) => s.situationText);
 
@@ -119,7 +120,15 @@ export default function Scoreboard() {
       )}
 
       {/* Batters */}
-      <div className="sb-batters">
+      <div className="sb-batters" style={{ position: 'relative' }}>
+        <button 
+          className="sb-swap-btn" 
+          onClick={swapBatters} 
+          title="Swap Strike"
+          aria-label="Swap Strike"
+        >
+          ⇄
+        </button>
         <div className={`sb-player ${inn.striker ? 'active' : ''}`}>
           <div className="sb-player-name">{inn.striker || 'Select Striker'} {inn.striker && '🏏'}</div>
           {inn.striker && inn.batters[inn.striker] && (
