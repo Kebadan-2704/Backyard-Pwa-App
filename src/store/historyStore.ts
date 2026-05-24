@@ -75,10 +75,18 @@ export const useHistoryStore = create<HistoryState>()(
         const { doc, setDoc } = await import('firebase/firestore');
         
         const state = get();
-        // Upload local matches to firestore
         for (const match of state.matches) {
           try {
-            await setDoc(doc(firestore, `users/${uid}/matches`, match.id.toString()), match, { merge: true });
+            // Firestore forbids nested arrays, so we must flatten/objectify `players` and `battingOrder`
+            const safeMatch = JSON.parse(JSON.stringify(match));
+            if (Array.isArray(safeMatch.players)) {
+              safeMatch.players = { 0: safeMatch.players[0] || [], 1: safeMatch.players[1] || [] };
+            }
+            if (Array.isArray(safeMatch.battingOrder)) {
+              safeMatch.battingOrder = { 0: safeMatch.battingOrder[0] || [], 1: safeMatch.battingOrder[1] || [] };
+            }
+            
+            await setDoc(doc(firestore, `users/${uid}/matches`, match.id.toString()), safeMatch, { merge: true });
           } catch (e) {
             console.error('Error syncing match to firestore:', e);
           }
@@ -93,7 +101,18 @@ export const useHistoryStore = create<HistoryState>()(
         try {
           const snapshot = await getDocs(collection(firestore, `users/${uid}/matches`));
           const cloudMatches: Match[] = [];
-          snapshot.forEach(doc => cloudMatches.push(doc.data() as Match));
+          
+          snapshot.forEach(docSnap => {
+            const m = docSnap.data();
+            // Restore nested arrays
+            if (m.players && !Array.isArray(m.players)) {
+              m.players = [m.players['0'] || [], m.players['1'] || []];
+            }
+            if (m.battingOrder && !Array.isArray(m.battingOrder)) {
+              m.battingOrder = [m.battingOrder['0'] || [], m.battingOrder['1'] || []];
+            }
+            cloudMatches.push(m as Match);
+          });
           
           if (cloudMatches.length > 0) {
             // Merge with local matches
