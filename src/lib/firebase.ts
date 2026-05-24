@@ -4,13 +4,13 @@ import type { Match } from '../types/cricket';
 
 // TODO: Replace with actual Firebase config from console
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "your-app.firebaseapp.com",
-  databaseURL: "https://your-app-default-rtdb.firebaseio.com",
-  projectId: "your-app",
-  storageBucket: "your-app.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdef123456"
+  apiKey: "AIzaSyAdN-rnoYuNk68hUj4oTEDgP3XkGAebVgY",
+  authDomain: "backyard-786cd.firebaseapp.com",
+  databaseURL: "https://backyard-786cd-default-rtdb.firebaseio.com",
+  projectId: "backyard-786cd",
+  storageBucket: "backyard-786cd.firebasestorage.app",
+  messagingSenderId: "642678416834",
+  appId: "1:642678416834:web:c9945f824c7b8feef1a25b"
 };
 
 // Initialize Firebase only if config is provided (prevents crashing if not setup)
