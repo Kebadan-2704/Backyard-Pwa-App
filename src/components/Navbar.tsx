@@ -22,7 +22,7 @@ export default function Navbar() {
         </NavLink>
         <NavLink
           to="/scorer"
-          className={({ isActive }) => `nav-tab ${isActive ? 'active' : ''} ${!match && !isActive ? 'disabled' : ''}`}
+          className={({ isActive }) => `nav-tab ${isActive ? 'active' : ''}`}
           aria-label="Scorer"
           role="tab"
         >
