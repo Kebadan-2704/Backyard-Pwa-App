@@ -92,7 +92,7 @@ export default function SetupPage() {
   return (
     <div className="view-container setup-page">
       {activeMatch && !activeMatch.complete && (
-        <div className="glass-card" style={{ border: '2px solid var(--gold)', background: 'rgba(240, 165, 0, 0.05)' }}>
+        <div className="glass-card" style={{ border: '2px solid var(--gold)', background: 'rgba(245, 166, 35, 0.05)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
             <ShieldAlert color="var(--gold)" />
             <h3 style={{ color: 'var(--gold)' }}>Match in Progress</h3>

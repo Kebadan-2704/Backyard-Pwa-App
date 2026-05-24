@@ -1,96 +1,103 @@
 /* ═══════════════════════════════════════════════════════
-   BACKYARD CRICKET SCORER — CYBER-ATHLETIC GLASSMORPHISM
+   BACKYARD CRICKET SCORER — STADIUM NIGHTS THEME
    ═══════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
-/* ——— THEME: NEON DARK (Cyber-Athletic) ——— */
+/* ——— THEME: STADIUM NIGHTS ——— */
 :root,
 [data-theme="dark-green"],
 [data-theme="dark-navy"],
 [data-theme="dark"] {
-  --bg-body: #0B0E14; /* Midnight Space */
-  --bg-nav: rgba(11, 14, 20, 0.7);
-  --bg-input: rgba(255, 255, 255, 0.03);
-  --bg-card: rgba(255, 255, 255, 0.04);
-  --bg-scoreboard: rgba(11, 14, 20, 0.6);
-  --bg-modal: #11151F;
-  --bg-backdrop: rgba(0, 0, 0, 0.75);
+  --bg-body: #0D1117; /* Warm Dark */
+  --bg-nav: rgba(13, 17, 23, 0.85);
+  --bg-input: rgba(255, 255, 255, 0.04);
+  --bg-card: rgba(255, 255, 255, 0.06);
+  --bg-scoreboard: rgba(13, 17, 23, 0.7);
+  --bg-modal: #161B22;
+  --bg-backdrop: rgba(0, 0, 0, 0.8);
 
-  --panel-solid: #161B26;
-  --panel: rgba(255, 255, 255, 0.06);
+  --panel-solid: #21262D;
+  --panel: rgba(255, 255, 255, 0.08);
   --panel-hover: rgba(255, 255, 255, 0.12);
   
-  --border: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.1);
   --border-hover: rgba(255, 255, 255, 0.2);
-  --border-glow: rgba(0, 242, 254, 0.3);
+  --border-glow: rgba(245, 166, 35, 0.3);
 
   --text-primary: #FFFFFF;
-  --text-secondary: rgba(255, 255, 255, 0.65);
-  --text-muted: rgba(255, 255, 255, 0.4);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-muted: rgba(255, 255, 255, 0.45);
   --text-faint: rgba(255, 255, 255, 0.15);
 
-  /* Cyber Accents */
-  --gold: #00F2FE; /* Replacing gold with Neon Cyan for primary actions */
-  --gold-light: #4FACFE; 
-  --leather: #FE0979; /* Replacing leather with Vivid Magenta for danger/wickets */
-  --leather-light: #FF7A00;
+  /* Cricket Core Colors */
+  --gold: #F5A623;       /* Trophy Gold */
+  --gold-light: #FFD700; /* Bright Gold */
+  --leather: #E74C3C;    /* Cherry Red Ball */
+  --leather-light: #FF6B6B; /* Soft Red */
   
-  --cyan: #00F2FE;
-  --magenta: #FE0979;
-  --green: #00FF87; /* Neon Green */
-  --purple: #B224EF;
-  --chalk: #F0F4F8;
-  --ink: #0B0E14;
+  --blue: #3498DB;       /* Sky Blue */
+  --cyan: #3498DB;       /* Alias to blue for legacy */
+  --magenta: #E74C3C;    /* Alias to leather for legacy */
+  --green: #2ECC71;      /* Pitch Grass Green */
+  --purple: #9B59B6;     /* Royal Purple */
+  --chalk: #F0F4F8;      /* Cream White */
+  --ink: #0D1117;
 
-  --radius: 16px;
-  --radius-lg: 24px;
+  --radius: 12px;
+  --radius-lg: 20px;
   --radius-pill: 9999px;
 
-  --font-display: 'Space Grotesk', sans-serif;
-  --font-body: 'Outfit', sans-serif;
-  --font-mono: 'Space Grotesk', monospace;
+  --font-display: 'Inter', -apple-system, sans-serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'Inter', monospace;
 
   --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   --transition-normal: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   --transition-spring: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  --shadow-glow: 0 4px 24px rgba(0, 242, 254, 0.25);
-  --shadow-danger: 0 4px 24px rgba(254, 9, 121, 0.35);
+  --shadow-glow: 0 4px 20px rgba(245, 166, 35, 0.25);
+  --shadow-danger: 0 4px 20px rgba(231, 76, 60, 0.3);
   --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.4);
 }
 
-/* ——— THEME: SLEEK LIGHT ——— */
+/* ——— THEME: DAY MATCH (Light) ——— */
 [data-theme="light"] {
   --bg-body: #F4F7FB;
-  --bg-nav: rgba(255, 255, 255, 0.85);
+  --bg-nav: rgba(255, 255, 255, 0.9);
   --bg-input: #FFFFFF;
-  --bg-card: rgba(255, 255, 255, 0.6);
-  --bg-scoreboard: rgba(255, 255, 255, 0.8);
+  --bg-card: #FFFFFF;
+  --bg-scoreboard: rgba(255, 255, 255, 0.9);
   --bg-modal: #FFFFFF;
-  --bg-backdrop: rgba(11, 14, 20, 0.5);
+  --bg-backdrop: rgba(13, 17, 23, 0.4);
 
   --panel-solid: #FFFFFF;
-  --panel: rgba(255, 255, 255, 0.8);
-  --panel-hover: #F0F4F8;
+  --panel: rgba(13, 17, 23, 0.04);
+  --panel-hover: rgba(13, 17, 23, 0.08);
   
-  --border: rgba(11, 14, 20, 0.08);
-  --border-hover: rgba(11, 14, 20, 0.15);
-  --border-glow: rgba(0, 114, 255, 0.2);
+  --border: rgba(13, 17, 23, 0.1);
+  --border-hover: rgba(13, 17, 23, 0.2);
+  --border-glow: rgba(245, 166, 35, 0.3);
 
   --text-primary: #11151F;
   --text-secondary: rgba(11, 14, 20, 0.65);
   --text-muted: rgba(11, 14, 20, 0.45);
   --text-faint: rgba(11, 14, 20, 0.2);
 
-  --gold: #0072FF;
-  --gold-light: #00C6FF;
-  --leather: #FF0844;
-  --leather-light: #FFB199;
+  --gold: #F5A623;
+  --gold-light: #FFC300;
+  --leather: #D32F2F;
+  --leather-light: #E57373;
   
-  --green: #00C652;
+  --blue: #1976D2;
+  --cyan: #1976D2;
+  --magenta: #D32F2F;
+  --green: #2E7D32;
+  --purple: #7B1FA2;
   --chalk: #11151F;
   --ink: #FFFFFF;
+  
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
 /* ——— HIGH CONTRAST (Accessibility) ——— */
@@ -104,8 +111,9 @@
   --border: #FFFFFF;
   --text-primary: #FFFFFF;
   --text-secondary: #FFFFFF;
-  --gold: #00FFFF;
-  --leather: #FF00FF;
+  --gold: #FFD700;
+  --leather: #FF0000;
+  --blue: #3498DB;
 }
 
 /* ——— FONT SIZE ——— */
@@ -133,6 +141,7 @@ body {
   user-select: none; /* Disable text selection for app feel */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Allow text selection only in inputs */
@@ -140,23 +149,23 @@ input, textarea {
   user-select: auto;
 }
 
-/* Dynamic Gradient Background */
+/* Dynamic Gradient Background - Warm Stadium Lights */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   background: 
-    radial-gradient(circle at 15% 10%, rgba(0, 242, 254, 0.12), transparent 45%),
-    radial-gradient(circle at 85% 90%, rgba(254, 9, 121, 0.12), transparent 45%),
-    linear-gradient(180deg, var(--bg-body) 0%, #080A0F 100%);
+    radial-gradient(circle at 20% 20%, rgba(245, 166, 35, 0.06), transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(46, 204, 113, 0.05), transparent 50%),
+    linear-gradient(180deg, var(--bg-body) 0%, #080B0E 100%);
   z-index: -1;
   pointer-events: none;
 }
 
 [data-theme="light"] body::before {
   background: 
-    radial-gradient(circle at 15% 10%, rgba(0, 198, 255, 0.1), transparent 45%),
-    radial-gradient(circle at 85% 90%, rgba(255, 8, 68, 0.1), transparent 45%),
+    radial-gradient(circle at 20% 20%, rgba(245, 166, 35, 0.08), transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(46, 204, 113, 0.06), transparent 50%),
     linear-gradient(180deg, var(--bg-body) 0%, #E8EEF5 100%);
 }
 
