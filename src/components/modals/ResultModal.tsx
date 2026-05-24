@@ -22,7 +22,14 @@ export default function ResultModal({ onClose, onViewScorecard }: Props) {
 
   if (!match || !match.complete) return null;
 
-  const allMatchPlayers = [...match.players[0], ...match.players[1]];
+  const allMatchPlayers = match.players && match.players.length === 2
+    ? [...match.players[0], ...match.players[1]]
+    : Array.from(new Set([
+        ...Object.keys(match.innings[0].batters || {}),
+        ...Object.keys(match.innings[0].bowlers || {}),
+        ...(match.innings[1] ? Object.keys(match.innings[1].batters || {}) : []),
+        ...(match.innings[1] ? Object.keys(match.innings[1].bowlers || {}) : [])
+      ]));
 
   function handleSaveAndExit() {
     if (match) saveMatch(match);

@@ -17,11 +17,14 @@ export default function MatchEditorModal({ match, onClose }: Props) {
 
   const [inn1Runs, setInn1Runs] = useState(match.innings[0]?.runs || 0);
   const [inn1Wickets, setInn1Wickets] = useState(match.innings[0]?.wickets || 0);
-  const [inn1Overs, setInn1Overs] = useState(match.innings[0] ? (Math.floor(match.innings[0].deliveries.length / 6) + (match.innings[0].deliveries.length % 6) / 10).toFixed(1) : '0.0');
+  const inn1Delivs = match.innings[0]?.deliveries || [];
+  const inn2Delivs = match.innings[1]?.deliveries || [];
+
+  const [inn1Overs, setInn1Overs] = useState(match.innings[0] ? (Math.floor(inn1Delivs.length / 6) + (inn1Delivs.length % 6) / 10).toFixed(1) : '0.0');
 
   const [inn2Runs, setInn2Runs] = useState(match.innings[1]?.runs || 0);
   const [inn2Wickets, setInn2Wickets] = useState(match.innings[1]?.wickets || 0);
-  const [inn2Overs, setInn2Overs] = useState(match.innings[1] ? (Math.floor(match.innings[1].deliveries.length / 6) + (match.innings[1].deliveries.length % 6) / 10).toFixed(1) : '0.0');
+  const [inn2Overs, setInn2Overs] = useState(match.innings[1] ? (Math.floor(inn2Delivs.length / 6) + (inn2Delivs.length % 6) / 10).toFixed(1) : '0.0');
 
   const handleSave = () => {
     const editedMatch = structuredClone(match);
@@ -105,7 +108,7 @@ export default function MatchEditorModal({ match, onClose }: Props) {
           </div>
         </div>
 
-        {match.innings[1]?.deliveries.length > 0 && (
+        {inn2Delivs.length > 0 && (
           <div className="glass-card" style={{ padding: 16, marginBottom: 24 }}>
             <h3 style={{ margin: '0 0 12px 0', color: 'var(--magenta)' }}>2nd Innings: {match.teams[1]}</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
