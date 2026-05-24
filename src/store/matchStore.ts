@@ -179,6 +179,10 @@ function checkAndEndInnings(
     }
   }
 
+  if (allOut) {
+    milestones.push({ message: `ALL OUT! 💥`, emoji: '💥' });
+  }
+
   if (allOut || lastMan || allOvers) {
     set({
       match: m,

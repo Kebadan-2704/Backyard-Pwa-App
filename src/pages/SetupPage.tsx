@@ -28,8 +28,8 @@ export default function SetupPage() {
   const [umpires, setUmpires] = useState('');
   
   // Players
-  const [t1PlayersText, setT1PlayersText] = useState('Rohit, Kohli, Surya, Hardik, Bumrah, Shami');
-  const [t2PlayersText, setT2PlayersText] = useState('Warner, Head, Smith, Maxwell, Starc, Cummins');
+  const [t1PlayersText, setT1PlayersText] = useState('');
+  const [t2PlayersText, setT2PlayersText] = useState('');
 
   function handleStart() {
     if (!t1.trim() || !t2.trim()) return;
@@ -39,12 +39,17 @@ export default function SetupPage() {
     const p1 = t1PlayersText.split(',').map(s => s.trim()).filter(Boolean);
     const p2 = t2PlayersText.split(',').map(s => s.trim()).filter(Boolean);
 
+    const actualP1 = p1.length > 0 ? p1 : Array.from({length: settings.playersPerTeam}, (_,i)=>`Player ${i+1}`);
+    const actualP2 = p2.length > 0 ? p2 : Array.from({length: settings.playersPerTeam}, (_,i)=>`Player ${i+1}`);
+    const maxPlayers = Math.max(actualP1.length, actualP2.length, settings.playersPerTeam);
+    const finalMaxWickets = Math.min(settings.maxWickets, maxPlayers - 1);
+
     startMatch({
       team1: t1,
       team2: t2,
-      players1: p1.length > 0 ? p1 : Array.from({length: settings.playersPerTeam}, (_,i)=>`Player ${i+1}`),
-      players2: p2.length > 0 ? p2 : Array.from({length: settings.playersPerTeam}, (_,i)=>`Player ${i+1}`),
-      settings: { ...settings, overs },
+      players1: actualP1,
+      players2: actualP2,
+      settings: { ...settings, overs, playersPerTeam: maxPlayers, maxWickets: finalMaxWickets },
       tossWinner: tossW,
       tossChoice: tossC,
       matchType,
