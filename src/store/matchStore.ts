@@ -281,8 +281,10 @@ export const useMatchStore = create<MatchState>()(
       },
 
       resumeMatch: (m) => {
+        const matchData = structuredClone(m);
+        matchData.highlights = matchData.highlights || [];
         set({ 
-          match: structuredClone(m), 
+          match: matchData, 
           isFreeHit: false, 
           pendingMilestones: [], 
           lastOverSummary: null, 
@@ -301,6 +303,7 @@ export const useMatchStore = create<MatchState>()(
         const { match } = get();
         if (!match || match.complete) return;
         const m = structuredClone(match);
+        m.highlights = m.highlights || [];
         const ci = m.currentInnings;
         const inn = m.innings[ci];
         const prevTeamRuns = inn.runs;
@@ -466,6 +469,7 @@ export const useMatchStore = create<MatchState>()(
         const { match } = get();
         if (!match || match.complete) return;
         const m = structuredClone(match);
+        m.highlights = m.highlights || [];
         const ci = m.currentInnings;
         const inn = m.innings[ci];
 
@@ -676,6 +680,7 @@ export const useMatchStore = create<MatchState>()(
         const { match } = get();
         if (!match || match.complete) return;
         const m = structuredClone(match);
+        m.highlights = m.highlights || [];
         const ci = m.currentInnings;
         const inn = m.innings[ci];
 
