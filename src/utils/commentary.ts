@@ -99,10 +99,10 @@ export function generateSituation(match: Match): string {
   const team = match.teams[ci];
 
   if (ci === 0) {
-    if (inn.runs === 0 && inn.deliveries.length === 0) {
+    if (inn.runs === 0 && (!inn.deliveries || inn.deliveries.length === 0)) {
       return `${team} are about to begin their innings.`;
     }
-    const rr = inn.deliveries.length > 0
+    const rr = (inn.deliveries && inn.deliveries.length > 0)
       ? ((inn.runs / Math.max(1, inn.deliveries.filter(d => !d.wide && !d.noball).length)) * 6).toFixed(1)
       : '0.0';
     return `${team} are ${inn.runs}/${inn.wickets}, scoring at ${rr} per over.`;
@@ -110,7 +110,7 @@ export function generateSituation(match: Match): string {
 
   const target = match.innings[0].runs + 1;
   const needed = target - inn.runs;
-  const legalBalls = inn.deliveries.filter(d => !d.wide && !d.noball).length;
+  const legalBalls = (inn.deliveries || []).filter(d => !d.wide && !d.noball).length;
   const ballsLeft = match.settings.overs * 6 - legalBalls;
 
   if (needed <= 0) return `${team} have won!`;

@@ -283,6 +283,12 @@ export const useMatchStore = create<MatchState>()(
       resumeMatch: (m) => {
         const matchData = structuredClone(m);
         matchData.highlights = matchData.highlights || [];
+        matchData.innings.forEach(inn => {
+          inn.deliveries = inn.deliveries || [];
+          inn.overSummaries = inn.overSummaries || [];
+          inn.fallOfWickets = inn.fallOfWickets || [];
+          inn.partnerships = inn.partnerships || [];
+        });
         set({ 
           match: matchData, 
           isFreeHit: false, 
@@ -292,7 +298,7 @@ export const useMatchStore = create<MatchState>()(
           showBatterSelect: false, 
           showInningsBreak: false,
           lastCommentary: 'Match resumed from history.', 
-          situationText: generateSituation(m) 
+          situationText: generateSituation(matchData) 
         });
       },
 
