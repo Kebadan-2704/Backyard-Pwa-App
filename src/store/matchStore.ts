@@ -54,6 +54,7 @@ export interface MatchState {
     dismissedBatter: 'striker' | 'nonStriker';
     runsBeforeWicket: number;
     fielder?: string;
+    isTeamWicket?: boolean;
   }) => void;
   undoLastBall: () => boolean;
 
@@ -623,6 +624,7 @@ export const useMatchStore = create<MatchState>()(
           swappedBatters: false,
           wasEndOfOver: false,
           fielder: config.fielder,
+          isTeamWicket: config.isTeamWicket,
         };
 
         inn.deliveries.push(delivery);
@@ -665,7 +667,7 @@ export const useMatchStore = create<MatchState>()(
           const bw = inn.bowlers[inn.currentBowler];
           bw.runsConceded += config.runsBeforeWicket;
           bw.ballsBowled++;
-          if (config.type !== 'Run Out') {
+          if (!config.isTeamWicket) {
             bw.wickets++;
           }
         }

@@ -1,6 +1,6 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { useMatchStore } from '../store/matchStore';
-import { Swords, ClipboardList, History, Settings, Trophy, Users } from 'lucide-react';
+import { Swords, ClipboardList, History, Settings, Trophy, Users, BarChart3 } from 'lucide-react';
 import LiveShare from './LiveShare';
 import './Navbar.css';
 
@@ -45,8 +45,17 @@ export default function Navbar() {
           aria-label="Stats"
           role="tab"
         >
-          <Trophy size={14} />
+          <BarChart3 size={14} />
           <span className="nav-tab-label">Stats</span>
+        </NavLink>
+        <NavLink
+          to="/tournament"
+          className={({ isActive }) => `nav-tab ${isActive ? 'active' : ''}`}
+          aria-label="Tournament"
+          role="tab"
+        >
+          <Trophy size={14} />
+          <span className="nav-tab-label">Cup</span>
         </NavLink>
         <NavLink
           to="/history"

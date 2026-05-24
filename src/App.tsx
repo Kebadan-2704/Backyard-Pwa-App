@@ -25,6 +25,7 @@ import SpectatorPage from './pages/SpectatorPage';
 import StatsPage from './pages/StatsPage';
 import DraftPage from './pages/DraftPage';
 import BroadcastPage from './pages/BroadcastPage';
+import TournamentDashboard from './pages/TournamentDashboard';
 
 export default function App() {
   const theme = useAppStore((s) => s.settings.theme);
@@ -82,6 +83,7 @@ export default function App() {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/stats" element={<StatsPage />} />
           <Route path="/broadcast" element={<BroadcastPage />} />
+          <Route path="/tournament" element={<TournamentDashboard />} />
           <Route path="/live/:matchId" element={<SpectatorPage />} />
         </Routes>
       </main>

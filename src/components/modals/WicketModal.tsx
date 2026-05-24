@@ -23,6 +23,7 @@ export default function WicketModal({ onClose }: Props) {
   const [dismissedBatter, setDismissedBatter] = useState<'striker' | 'nonStriker'>('striker');
   const [runs, setRuns] = useState(0);
   const [fielder, setFielder] = useState('');
+  const [isTeamWicket, setIsTeamWicket] = useState(isFreeHit);
 
   if (!match) return null;
 
@@ -43,8 +44,17 @@ export default function WicketModal({ onClose }: Props) {
   const fieldingTeamIdx = ci === 0 ? 1 : 0;
   const fieldingPlayers = match.players[fieldingTeamIdx];
 
+  function handleTypeChange(newType: DismissalType) {
+    setType(newType);
+    if (['Run Out', 'Obstructing Field', 'Timed Out', 'Mankading', 'Hit Ball Twice', 'Retired Hurt', 'Retired Out'].includes(newType)) {
+      setIsTeamWicket(true);
+    } else {
+      setIsTeamWicket(false);
+    }
+  }
+
   function handleSubmit() {
-    submitWicket({ type, dismissedBatter, runsBeforeWicket: runs, fielder: fielder || undefined });
+    submitWicket({ type, dismissedBatter, runsBeforeWicket: runs, fielder: fielder || undefined, isTeamWicket });
     onClose();
   }
 
@@ -63,11 +73,23 @@ export default function WicketModal({ onClose }: Props) {
           <label>How out?</label>
           <select 
             value={type} 
-            onChange={(e) => setType(e.target.value as DismissalType)}
+            onChange={(e) => handleTypeChange(e.target.value as DismissalType)}
             aria-label="Dismissal type"
           >
             {allowedTypes.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
+        </div>
+
+        <div className="field" style={{ marginBottom: 12 }}>
+          <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', background: 'rgba(0,0,0,0.2)', padding: '10px', borderRadius: '8px' }}>
+            <input 
+              type="checkbox" 
+              checked={!isTeamWicket}
+              onChange={(e) => setIsTeamWicket(!e.target.checked)}
+              style={{ width: 18, height: 18 }}
+            />
+            <span style={{ fontSize: 14 }}>Credit Wicket to Bowler?</span>
+          </label>
         </div>
 
         {canChooseBatter && (

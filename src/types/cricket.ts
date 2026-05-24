@@ -31,6 +31,7 @@ export interface Delivery {
   wide: boolean;
   noball: boolean;
   wicket: boolean;
+  isTeamWicket?: boolean;
   wktType?: DismissalType;
   dismissedBatter?: string;
   batter: string;
@@ -306,4 +307,48 @@ export function createBowlerStats(): BowlerStats {
     wides: 0, noballs: 0, maidens: 0, dotBalls: 0, economy: 0,
     foursConceded: 0, sixesConceded: 0, spells: [],
   };
+}
+
+// ═══════════════════════════════════════════════════════
+//  TOURNAMENT TYPES
+// ═══════════════════════════════════════════════════════
+
+export type TournamentFormat = 'knockout' | 'league' | 'group_knockout';
+export type FixtureStatus = 'upcoming' | 'live' | 'completed';
+
+export interface TournamentTeam {
+  name: string;
+  players: string[];
+  played: number;
+  won: number;
+  lost: number;
+  nrr: number;       // net run rate
+  points: number;
+}
+
+export interface Fixture {
+  id: string;
+  round: number;          // 1 = Quarter-final, 2 = Semi-final, 3 = Final (for knockout)
+  matchIndex: number;     // position within the round
+  team1: string;
+  team2: string;
+  status: FixtureStatus;
+  matchId?: number;       // links to a Match.id once started
+  winner?: string;
+  score1?: string;        // e.g. "145/6 (20)"
+  score2?: string;
+  scorers: string[];      // device IDs allowed to score this match
+}
+
+export interface Tournament {
+  id: string;
+  name: string;
+  format: TournamentFormat;
+  teams: TournamentTeam[];
+  fixtures: Fixture[];
+  settings: MatchSettings;
+  currentRound: number;
+  champion?: string;
+  createdAt: number;
+  isComplete: boolean;
 }
