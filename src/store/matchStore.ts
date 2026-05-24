@@ -310,6 +310,12 @@ export const useMatchStore = create<MatchState>()(
         if (!match || match.complete) return;
         const m = structuredClone(match);
         m.highlights = m.highlights || [];
+        m.innings.forEach(i => {
+          i.deliveries = i.deliveries || [];
+          i.overSummaries = i.overSummaries || [];
+          i.fallOfWickets = i.fallOfWickets || [];
+          i.partnerships = i.partnerships || [];
+        });
         const ci = m.currentInnings;
         const inn = m.innings[ci];
         const prevTeamRuns = inn.runs;
@@ -476,6 +482,12 @@ export const useMatchStore = create<MatchState>()(
         if (!match || match.complete) return;
         const m = structuredClone(match);
         m.highlights = m.highlights || [];
+        m.innings.forEach(i => {
+          i.deliveries = i.deliveries || [];
+          i.overSummaries = i.overSummaries || [];
+          i.fallOfWickets = i.fallOfWickets || [];
+          i.partnerships = i.partnerships || [];
+        });
         const ci = m.currentInnings;
         const inn = m.innings[ci];
 
@@ -687,6 +699,12 @@ export const useMatchStore = create<MatchState>()(
         if (!match || match.complete) return;
         const m = structuredClone(match);
         m.highlights = m.highlights || [];
+        m.innings.forEach(i => {
+          i.deliveries = i.deliveries || [];
+          i.overSummaries = i.overSummaries || [];
+          i.fallOfWickets = i.fallOfWickets || [];
+          i.partnerships = i.partnerships || [];
+        });
         const ci = m.currentInnings;
         const inn = m.innings[ci];
 
