@@ -12,7 +12,8 @@ import ScorecardModal from '../components/modals/ScorecardModal';
 import DLSModal from '../components/modals/DLSModal';
 import CelebrationOverlay from '../components/CelebrationOverlay';
 import { useState } from 'react';
-import { Play, CloudRain } from 'lucide-react';
+import { Play, CloudRain, DownloadCloud } from 'lucide-react';
+import { fetchMatch } from '../lib/firebase';
 
 export default function ScorerPage() {
   const navigate = useNavigate();
@@ -32,15 +33,53 @@ export default function ScorerPage() {
   const [showWicketModal, setShowWicketModal] = useState(false);
   const [showScorecard, setShowScorecard] = useState(false);
   const [showDLS, setShowDLS] = useState(false);
+  const [importCode, setImportCode] = useState('');
+  const [isImporting, setIsImporting] = useState(false);
+  
+  const resumeMatch = useMatchStore((s) => s.resumeMatch);
+
+  async function handleImport() {
+    if (!importCode.trim()) return;
+    setIsImporting(true);
+    const m = await fetchMatch(importCode.trim());
+    setIsImporting(false);
+    if (m) {
+      resumeMatch(m);
+      setImportCode('');
+    } else {
+      alert("Match not found or invalid code!");
+    }
+  }
 
   if (!match) {
     return (
-      <div className="view-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh', textAlign: 'center' }}>
+      <div className="view-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '80vh', textAlign: 'center', padding: '0 20px' }}>
         <h2 style={{ fontSize: 24, color: 'var(--gold)', marginBottom: 16 }}>No Active Match</h2>
         <p style={{ color: 'var(--text-secondary)', marginBottom: 24 }}>Start a new match from the setup screen.</p>
-        <button className="btn-primary" onClick={() => navigate('/setup')} style={{ maxWidth: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+        <button className="btn-primary" onClick={() => navigate('/setup')} style={{ maxWidth: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 32 }}>
           <Play size={18} /> START MATCH
         </button>
+
+        <div className="glass-card" style={{ maxWidth: 300, width: '100%', padding: '20px' }}>
+          <div className="card-title" style={{ fontSize: 14, marginBottom: 12 }}>TAKE OVER SCORING</div>
+          <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 12 }}>Enter a live match code to take over scoring duties from another device.</p>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <input 
+              placeholder="Match Code" 
+              value={importCode}
+              onChange={e => setImportCode(e.target.value)}
+              style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-input)', color: '#fff' }}
+            />
+            <button 
+              className="btn-secondary" 
+              onClick={handleImport}
+              disabled={isImporting || !importCode.trim()}
+              style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+              {isImporting ? '...' : <DownloadCloud size={18} />}
+            </button>
+          </div>
+        </div>
       </div>
     );
   }

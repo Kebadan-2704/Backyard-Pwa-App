@@ -21,6 +21,9 @@ export default function SetupPage() {
   const [coinResult, setCoinResult] = useState<'heads' | 'tails' | null>(null);
   const [settings, setSettings] = useState<MatchSettings>(createDefaultSettings());
   
+  // Wizard state
+  const [step, setStep] = useState(1);
+  
   // V3 specific fields
   const [matchType, setMatchType] = useState<MatchType>('friendly');
   const [pitchCondition, setPitchCondition] = useState<PitchCondition>('');
@@ -103,229 +106,273 @@ export default function SetupPage() {
         </div>
       )}
 
-      <div className="glass-card">
-        <div className="card-title">TEAMS</div>
-        <div className="field">
-          <label>Host Team</label>
-          <input value={t1} onChange={(e) => setT1(e.target.value.toUpperCase())} maxLength={15} />
-        </div>
-        <div className="field" style={{ marginTop: 12 }}>
-          <label>Visitor Team</label>
-          <input value={t2} onChange={(e) => setT2(e.target.value.toUpperCase())} maxLength={15} />
-        </div>
-      </div>
-
-      <div className="glass-card">
-        <div className="card-title">MATCH FORMAT</div>
-        
-        <div className="format-grid">
-          <div className="field">
-            <label>Overs per Innings</label>
-            <input 
-              type="number" 
-              value={overs || ''} 
-              onChange={(e) => setOvers(parseInt(e.target.value) || 0)}
-              min={1} 
-              max={50}
-            />
-          </div>
-          
-          <div className="field">
-            <label>Match Type</label>
-            <select value={matchType} onChange={(e) => setMatchType(e.target.value as MatchType)}>
-              <option value="friendly">Friendly</option>
-              <option value="practice">Practice</option>
-              <option value="league">League Match</option>
-              <option value="knockout">Knockout</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div className="glass-card">
-        <div className="card-title">TOSS</div>
-        
-        <div className="toss-container">
-          <div className="coin-wrapper">
-            <div className={`coin ${isFlipping ? 'flipping' : ''} ${coinResult === 'tails' ? 'tails-up' : ''}`} style={!isFlipping && coinResult === 'tails' ? { transform: 'rotateX(180deg)' } : {}}>
-              <div className="coin-face coin-heads">{t1 || 'T1'}</div>
-              <div className="coin-face coin-tails">{t2 || 'T2'}</div>
+      {step === 1 && (
+        <div className="slide-down">
+          <div className="glass-card">
+            <div className="card-title">QUICK GAME SETUP</div>
+            <div className="field">
+              <label>Host Team</label>
+              <input value={t1} onChange={(e) => setT1(e.target.value.toUpperCase())} maxLength={15} />
+            </div>
+            <div className="field" style={{ marginTop: 12 }}>
+              <label>Visitor Team</label>
+              <input value={t2} onChange={(e) => setT2(e.target.value.toUpperCase())} maxLength={15} />
             </div>
           </div>
-          
-          <button 
-            className="toss-action-btn" 
-            onClick={handleFlipCoin} 
-            disabled={isFlipping}
-            type="button"
-          >
-            {isFlipping ? 'FLIPPING...' : tossW ? 'FLIP AGAIN' : 'FLIP COIN'}
+          <button className="btn-primary" onClick={() => {
+            if (!t1.trim() || !t2.trim()) alert("Please enter both team names");
+            else setStep(2);
+          }}>
+            NEXT: MATCH TYPE
           </button>
         </div>
+      )}
 
-        {tossW && !isFlipping && (
-          <div className="field slide-down">
-            <label style={{ textAlign: 'center', color: 'var(--gold)', fontSize: 16 }}>
-              🎉 {tossW} WON THE TOSS! 🎉
-            </label>
-            <label style={{ marginTop: 12 }}>What is their decision?</label>
-            <div className="toss-row">
-              <button 
-                className={`toss-btn ${tossC === 'bat' ? 'active' : ''}`}
-                onClick={() => setTossC('bat')}
-                type="button"
-              >
-                🏏 BAT FIRST
-              </button>
-              <button 
-                className={`toss-btn ${tossC === 'bowl' ? 'active' : ''}`}
-                onClick={() => setTossC('bowl')}
-                type="button"
-              >
-                🥎 BOWL FIRST
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className="glass-card advanced-toggle" onClick={() => setShowAdvanced(!showAdvanced)}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Settings2 size={16} />
-          <span style={{ fontWeight: 600, fontSize: 13 }}>ADVANCED SETTINGS & ROSTERS</span>
-        </div>
-        <ChevronRight size={16} style={{ transform: showAdvanced ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }} />
-      </div>
-
-      {showAdvanced && (
-        <div className="advanced-settings slide-down">
+      {step === 2 && (
+        <div className="slide-down">
           <div className="glass-card">
-            <div className="card-title">TEAM ROSTERS (Comma separated)</div>
-            <div className="field" style={{ marginBottom: 12 }}>
-              <label>{t1} Players</label>
-              <textarea 
-                value={t1PlayersText} 
-                onChange={(e) => setT1PlayersText(e.target.value)}
-                placeholder="Rahul, Virat, Surya..."
-                rows={3}
-              />
-            </div>
-            <div className="field">
-              <label>{t2} Players</label>
-              <textarea 
-                value={t2PlayersText} 
-                onChange={(e) => setT2PlayersText(e.target.value)}
-                placeholder="Warner, Smith, Maxwell..."
-                rows={3}
-              />
-            </div>
-          </div>
-
-          <div className="glass-card">
-            <div className="card-title">CONDITIONS</div>
-            <div className="field" style={{ marginBottom: 12 }}>
-              <label>Venue</label>
-              <input value={venue} onChange={(e) => setVenue(e.target.value)} placeholder="e.g. Backyard Stadium" />
-            </div>
-            <div className="field" style={{ marginBottom: 12 }}>
-              <label>Pitch Condition</label>
-              <select value={pitchCondition} onChange={(e) => setPitchCondition(e.target.value as PitchCondition)}>
-                <option value="">Unknown / Standard</option>
-                <option value="dry">Dry & Hard</option>
-                <option value="wet">Wet / Damp</option>
-                <option value="flat">Flat Track</option>
-                <option value="turning">Turning Track</option>
-                <option value="green">Green Top</option>
-              </select>
-            </div>
-            <div className="field">
-              <label>Umpires</label>
-              <input value={umpires} onChange={(e) => setUmpires(e.target.value)} placeholder="e.g. Uncle John" />
-            </div>
-          </div>
-
-          <div className="glass-card">
-            <div className="card-title">RULES</div>
+            <div className="card-title">MATCH FORMAT</div>
+            
             <div className="format-grid">
               <div className="field">
-                <label>Players per team</label>
-                <input 
-                  type="number" 
-                  value={settings.playersPerTeam}
-                  onChange={(e) => setSettings({...settings, playersPerTeam: parseInt(e.target.value) || 11, maxWickets: (parseInt(e.target.value) || 11) - 1})}
-                />
-              </div>
-              <div className="field">
-                <label>Wickets to all-out</label>
-                <input 
-                  type="number" 
-                  value={settings.maxWickets}
-                  onChange={(e) => setSettings({...settings, maxWickets: parseInt(e.target.value) || 10})}
-                />
-              </div>
-              <div className="field">
-                <label>Max overs / bowler</label>
-                <input 
-                  type="number" 
-                  value={settings.maxOversPerBowler}
-                  onChange={(e) => setSettings({...settings, maxOversPerBowler: parseInt(e.target.value) || 2})}
-                />
-              </div>
-              <div className="field">
-                <label>Powerplay overs</label>
-                <input 
-                  type="number" 
-                  value={settings.powerplayOvers}
-                  onChange={(e) => setSettings({...settings, powerplayOvers: parseInt(e.target.value) || 0})}
-                />
+                <label>Match Type</label>
+                <select value={matchType} onChange={(e) => setMatchType(e.target.value as MatchType)}>
+                  <option value="friendly">Friendly Match</option>
+                  <option value="practice">Practice Game</option>
+                  <option value="league">League Match</option>
+                  <option value="knockout">Tournament / Knockout</option>
+                </select>
               </div>
             </div>
 
-            <div className="house-rules" style={{ marginTop: 20 }}>
-              <label className="checkbox-label">
-                <input 
-                  type="checkbox" 
-                  checked={settings.freeHitOnNoball}
-                  onChange={(e) => setSettings({...settings, freeHitOnNoball: e.target.checked})}
-                />
-                Free Hit on No-ball
-              </label>
-              <label className="checkbox-label">
-                <input 
-                  type="checkbox" 
-                  checked={settings.lastManStanding}
-                  onChange={(e) => setSettings({...settings, lastManStanding: e.target.checked})}
-                />
-                Last Man Standing (solo batting)
-              </label>
-              <label className="checkbox-label">
-                <input 
-                  type="checkbox" 
-                  checked={settings.houseRules.oneTipOneHand}
-                  onChange={(e) => setSettings({...settings, houseRules: {...settings.houseRules, oneTipOneHand: e.target.checked}})}
-                />
-                One Tip One Hand (Catch)
-              </label>
-              <label className="checkbox-label">
-                <input 
-                  type="checkbox" 
-                  checked={settings.houseRules.autoBowlerRotation}
-                  onChange={(e) => setSettings({...settings, houseRules: {...settings.houseRules, autoBowlerRotation: e.target.checked}})}
-                />
-                Enforce Bowler Rotation
-              </label>
-            </div>
+            {matchType === 'knockout' && (
+              <div className="format-grid" style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                <div className="field">
+                  <label>Number of Teams in Tournament</label>
+                  <input type="number" defaultValue={4} min={3} max={16} />
+                </div>
+                <div className="field">
+                  <label>Schedule Type</label>
+                  <select>
+                    <option value="auto">Automatic Bracket</option>
+                    <option value="custom">Custom Schedule</option>
+                  </select>
+                </div>
+              </div>
+            )}
+          </div>
+          
+          <div style={{ display: 'flex', gap: 12 }}>
+            <button className="btn-secondary" onClick={() => setStep(1)}>BACK</button>
+            <button className="btn-primary" onClick={() => setStep(3)}>NEXT: TOSS & RULES</button>
           </div>
         </div>
       )}
 
-      <button 
-        className="btn-primary" 
-        onClick={handleStart}
-        disabled={!t1.trim() || !t2.trim() || overs < 1}
-      >
-        START MATCH
-      </button>
+      {step === 3 && (
+        <div className="slide-down">
+          <div className="glass-card">
+            <div className="card-title">TOSS & SETTINGS</div>
+            
+            <div className="format-grid" style={{ marginBottom: 20 }}>
+              <div className="field">
+                <label>Overs per Innings</label>
+                <input 
+                  type="number" 
+                  value={overs || ''} 
+                  onChange={(e) => setOvers(parseInt(e.target.value) || 0)}
+                  min={1} 
+                  max={50}
+                />
+              </div>
+            </div>
+
+            <div className="toss-container">
+              <div className="coin-wrapper">
+                <div className={`coin ${isFlipping ? 'flipping' : ''} ${coinResult === 'tails' ? 'tails-up' : ''}`} style={!isFlipping && coinResult === 'tails' ? { transform: 'rotateX(180deg)' } : {}}>
+                  <div className="coin-face coin-heads">{t1 || 'T1'}</div>
+                  <div className="coin-face coin-tails">{t2 || 'T2'}</div>
+                </div>
+              </div>
+              
+              <button 
+                className="toss-action-btn" 
+                onClick={handleFlipCoin} 
+                disabled={isFlipping}
+                type="button"
+              >
+                {isFlipping ? 'FLIPPING...' : tossW ? 'FLIP AGAIN' : 'FLIP COIN'}
+              </button>
+            </div>
+
+            {tossW && !isFlipping && (
+              <div className="field slide-down">
+                <label style={{ textAlign: 'center', color: 'var(--gold)', fontSize: 16 }}>
+                  🎉 {tossW} WON THE TOSS! 🎉
+                </label>
+                <label style={{ marginTop: 12 }}>What is their decision?</label>
+                <div className="toss-row">
+                  <button 
+                    className={`toss-btn ${tossC === 'bat' ? 'active' : ''}`}
+                    onClick={() => setTossC('bat')}
+                    type="button"
+                  >
+                    🏏 BAT FIRST
+                  </button>
+                  <button 
+                    className={`toss-btn ${tossC === 'bowl' ? 'active' : ''}`}
+                    onClick={() => setTossC('bowl')}
+                    type="button"
+                  >
+                    🥎 BOWL FIRST
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+          
+          <div className="glass-card advanced-toggle" onClick={() => setShowAdvanced(!showAdvanced)}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Settings2 size={16} />
+              <span style={{ fontWeight: 600, fontSize: 13 }}>ADVANCED SETTINGS & ROSTERS</span>
+            </div>
+            <ChevronRight size={16} style={{ transform: showAdvanced ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }} />
+          </div>
+
+          {showAdvanced && (
+            <div className="advanced-settings slide-down">
+              <div className="glass-card">
+                <div className="card-title">TEAM ROSTERS (Comma separated)</div>
+                <div className="field" style={{ marginBottom: 12 }}>
+                  <label>{t1} Players</label>
+                  <textarea 
+                    value={t1PlayersText} 
+                    onChange={(e) => setT1PlayersText(e.target.value)}
+                    placeholder="Rahul, Virat, Surya..."
+                    rows={3}
+                  />
+                </div>
+                <div className="field">
+                  <label>{t2} Players</label>
+                  <textarea 
+                    value={t2PlayersText} 
+                    onChange={(e) => setT2PlayersText(e.target.value)}
+                    placeholder="Warner, Smith, Maxwell..."
+                    rows={3}
+                  />
+                </div>
+              </div>
+
+              <div className="glass-card">
+                <div className="card-title">CONDITIONS</div>
+                <div className="field" style={{ marginBottom: 12 }}>
+                  <label>Venue</label>
+                  <input value={venue} onChange={(e) => setVenue(e.target.value)} placeholder="e.g. Backyard Stadium" />
+                </div>
+                <div className="field" style={{ marginBottom: 12 }}>
+                  <label>Pitch Condition</label>
+                  <select value={pitchCondition} onChange={(e) => setPitchCondition(e.target.value as PitchCondition)}>
+                    <option value="">Unknown / Standard</option>
+                    <option value="dry">Dry & Hard</option>
+                    <option value="wet">Wet / Damp</option>
+                    <option value="flat">Flat Track</option>
+                    <option value="turning">Turning Track</option>
+                    <option value="green">Green Top</option>
+                  </select>
+                </div>
+                <div className="field">
+                  <label>Umpires</label>
+                  <input value={umpires} onChange={(e) => setUmpires(e.target.value)} placeholder="e.g. Uncle John" />
+                </div>
+              </div>
+
+              <div className="glass-card">
+                <div className="card-title">RULES</div>
+                <div className="format-grid">
+                  <div className="field">
+                    <label>Players per team</label>
+                    <input 
+                      type="number" 
+                      value={settings.playersPerTeam}
+                      onChange={(e) => setSettings({...settings, playersPerTeam: parseInt(e.target.value) || 11, maxWickets: (parseInt(e.target.value) || 11) - 1})}
+                    />
+                  </div>
+                  <div className="field">
+                    <label>Wickets to all-out</label>
+                    <input 
+                      type="number" 
+                      value={settings.maxWickets}
+                      onChange={(e) => setSettings({...settings, maxWickets: parseInt(e.target.value) || 10})}
+                    />
+                  </div>
+                  <div className="field">
+                    <label>Max overs / bowler</label>
+                    <input 
+                      type="number" 
+                      value={settings.maxOversPerBowler}
+                      onChange={(e) => setSettings({...settings, maxOversPerBowler: parseInt(e.target.value) || 2})}
+                    />
+                  </div>
+                  <div className="field">
+                    <label>Powerplay overs</label>
+                    <input 
+                      type="number" 
+                      value={settings.powerplayOvers}
+                      onChange={(e) => setSettings({...settings, powerplayOvers: parseInt(e.target.value) || 0})}
+                    />
+                  </div>
+                </div>
+
+                <div className="house-rules" style={{ marginTop: 20 }}>
+                  <label className="checkbox-label">
+                    <input 
+                      type="checkbox" 
+                      checked={settings.freeHitOnNoball}
+                      onChange={(e) => setSettings({...settings, freeHitOnNoball: e.target.checked})}
+                    />
+                    Free Hit on No-ball
+                  </label>
+                  <label className="checkbox-label">
+                    <input 
+                      type="checkbox" 
+                      checked={settings.lastManStanding}
+                      onChange={(e) => setSettings({...settings, lastManStanding: e.target.checked})}
+                    />
+                    Last Man Standing (solo batting)
+                  </label>
+                  <label className="checkbox-label">
+                    <input 
+                      type="checkbox" 
+                      checked={settings.houseRules.oneTipOneHand}
+                      onChange={(e) => setSettings({...settings, houseRules: {...settings.houseRules, oneTipOneHand: e.target.checked}})}
+                    />
+                    One Tip One Hand (Catch)
+                  </label>
+                  <label className="checkbox-label">
+                    <input 
+                      type="checkbox" 
+                      checked={settings.houseRules.autoBowlerRotation}
+                      onChange={(e) => setSettings({...settings, houseRules: {...settings.houseRules, autoBowlerRotation: e.target.checked}})}
+                    />
+                    Enforce Bowler Rotation
+                  </label>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
+            <button className="btn-secondary" onClick={() => setStep(2)}>BACK</button>
+            <button 
+              className="btn-primary" 
+              onClick={handleStart}
+              style={{ fontSize: 18, padding: '16px', background: 'var(--gold)', color: '#000' }}
+            >
+              START MATCH
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

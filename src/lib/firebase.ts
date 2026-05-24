@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, set, onValue, off } from 'firebase/database';
+import { getDatabase, ref, set, onValue, off, get } from 'firebase/database';
 import type { Match } from '../types/cricket';
 
 // TODO: Replace with actual Firebase config from console
@@ -47,4 +47,22 @@ export function subscribeToMatch(matchId: string, callback: (data: Match | null)
   });
 
   return () => off(matchRef);
+}
+
+/**
+ * Fetches a live match once (for importing/taking over scoring)
+ */
+export async function fetchMatch(matchId: string): Promise<Match | null> {
+  if (!db) return null;
+  const matchRef = ref(db, `live_matches/${matchId}`);
+  try {
+    const snapshot = await get(matchRef);
+    if (snapshot.exists()) {
+      return snapshot.val() as Match;
+    }
+    return null;
+  } catch (err) {
+    console.error("Firebase fetch error:", err);
+    return null;
+  }
 }
