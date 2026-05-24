@@ -133,14 +133,24 @@
 }
 
 .coin-heads {
-  background: linear-gradient(135deg, var(--gold), var(--gold-light));
-  color: var(--ink);
-  border-color: rgba(0, 0, 0, 0.1);
+  background-color: var(--ink);
+  background-image: url('/coins/heads.png');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: transparent;
+  border-color: rgba(255, 215, 0, 0.3);
 }
 
 .coin-tails {
-  background: linear-gradient(135deg, var(--leather), var(--leather-light));
+  background-color: var(--ink);
+  background-image: url('/coins/tails.png');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: transparent;
   transform: rotateX(180deg);
+  border-color: rgba(255, 215, 0, 0.3);
 }
 
 
