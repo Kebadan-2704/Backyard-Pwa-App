@@ -67,6 +67,15 @@ export default function Navbar() {
           <span className="nav-tab-label">History</span>
         </NavLink>
         <NavLink
+          to="/archives"
+          className={({ isActive }) => `nav-tab ${isActive ? 'active' : ''}`}
+          aria-label="Hall of Fame Archives"
+          role="tab"
+        >
+          <Trophy size={14} color="var(--gold)" />
+          <span className="nav-tab-label">Archives</span>
+        </NavLink>
+        <NavLink
           to="/settings"
           className={({ isActive }) => `nav-tab ${isActive ? 'active' : ''}`}
           aria-label="Settings"

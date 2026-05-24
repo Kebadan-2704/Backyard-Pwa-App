@@ -8,10 +8,11 @@ interface Props {
   onWicket: () => void;
   onEndInnings?: () => void;
   onExtra: (type: 'wide' | 'noball' | 'bye' | 'legbye' | 'penalty') => void;
+  onBoundary: () => void;
   disabled?: boolean;
 }
 
-export default function ActionPad({ onWicket, onEndInnings, onExtra, disabled = false }: Props) {
+export default function ActionPad({ onWicket, onEndInnings, onExtra, onBoundary, disabled = false }: Props) {
   const addRun = useMatchStore((s) => s.addRun);
   const addExtra = useMatchStore((s) => s.addExtra);
   const undoLastBall = useMatchStore((s) => s.undoLastBall);
@@ -29,6 +30,7 @@ export default function ActionPad({ onWicket, onEndInnings, onExtra, disabled = 
       haptic.boundary();
       sound.playBoundary();
       sound.speakCommentary(r === 4 ? 'Four runs! Beautiful shot!' : 'Six! Out of the park!');
+      onBoundary();
     } else {
       haptic.tap();
       sound.playTap();

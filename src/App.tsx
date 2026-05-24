@@ -24,7 +24,10 @@ import SettingsPage from './pages/SettingsPage';
 import SpectatorPage from './pages/SpectatorPage';
 import StatsPage from './pages/StatsPage';
 import DraftPage from './pages/DraftPage';
+import BracketPage from './pages/BracketPage';
 import BroadcastPage from './pages/BroadcastPage';
+import StandingsPage from './pages/StandingsPage';
+import ArchivesPage from './pages/ArchivesPage';
 import TournamentDashboard from './pages/TournamentDashboard';
 
 export default function App() {
@@ -82,7 +85,10 @@ export default function App() {
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/stats" element={<StatsPage />} />
+          <Route path="/bracket" element={<BracketPage />} />
+          <Route path="/standings" element={<StandingsPage />} />
           <Route path="/broadcast" element={<BroadcastPage />} />
+          <Route path="/archives" element={<ArchivesPage />} />
           <Route path="/tournament" element={<TournamentDashboard />} />
           <Route path="/live/:matchId" element={<SpectatorPage />} />
         </Routes>

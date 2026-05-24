@@ -11,6 +11,7 @@ import ResultModal from '../components/modals/ResultModal';
 import ScorecardModal from '../components/modals/ScorecardModal';
 import DLSModal from '../components/modals/DLSModal';
 import ExtrasModal from '../components/modals/ExtrasModal';
+import WagonWheelModal from '../components/modals/WagonWheelModal';
 import CelebrationOverlay from '../components/CelebrationOverlay';
 import { useState, useEffect } from 'react';
 import { Play, CloudRain, DownloadCloud, AlertTriangle } from 'lucide-react';
@@ -38,6 +39,9 @@ export default function ScorerPage() {
   const [showDLS, setShowDLS] = useState(false);
   const [showExtrasModal, setShowExtrasModal] = useState(false);
   const [selectedExtraType, setSelectedExtraType] = useState<'wide' | 'noball' | 'bye' | 'legbye' | 'penalty'>('wide');
+  const [showWagonWheel, setShowWagonWheel] = useState(false);
+  
+  const setLastDeliveryRegion = useMatchStore((s) => s.setLastDeliveryRegion);
   const [importCode, setImportCode] = useState('');
   const [isImporting, setIsImporting] = useState(false);
   
@@ -180,6 +184,9 @@ export default function ScorerPage() {
                 setShowExtrasModal(true);
              }
           }}
+          onBoundary={() => {
+             setShowWagonWheel(true);
+          }}
           disabled={!isActiveScorer || showBatterSelectForced || showBowlerSelectForced || match.complete} 
         />
       </div>
@@ -227,6 +234,16 @@ export default function ScorerPage() {
         <ExtrasModal 
            initialType={selectedExtraType}
            onClose={() => setShowExtrasModal(false)} 
+        />
+      )}
+
+      {showWagonWheel && (
+        <WagonWheelModal
+           onSelectRegion={(r) => {
+             setLastDeliveryRegion(r);
+             setShowWagonWheel(false);
+           }}
+           onSkip={() => setShowWagonWheel(false)}
         />
       )}
 

@@ -33,8 +33,8 @@ export default function ExtrasModal({ onClose, initialType = 'wide' }: Props) {
   }
 
   return (
-    <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="modal-content">
+    <div className="modal-overlay drawer-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="modal-content drawer-content">
         <h2>EXTRAS ENTRY</h2>
         
         <div className="field" style={{ marginBottom: 16 }}>

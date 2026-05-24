@@ -59,8 +59,8 @@ export default function WicketModal({ onClose }: Props) {
   }
 
   return (
-    <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="modal-content">
+    <div className="modal-overlay drawer-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="modal-content drawer-content">
         <h2>WICKET</h2>
         
         {isFreeHit && (

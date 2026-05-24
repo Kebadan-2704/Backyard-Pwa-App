@@ -25,6 +25,16 @@ export type PitchCondition = '' | 'dry' | 'wet' | 'flat' | 'turning' | 'green' |
 
 export type ScoringZone = 'offDrive' | 'cover' | 'point' | 'thirdMan' | 'fineLeg' | 'legSide' | 'straight' | '';
 
+export type ShotRegion = 
+  | 'third-man'
+  | 'point'
+  | 'cover'
+  | 'long-off'
+  | 'long-on'
+  | 'deep-midwicket'
+  | 'deep-square-leg'
+  | 'fine-leg';
+
 export interface Delivery {
   id: number;
   runs: number;
@@ -48,6 +58,7 @@ export interface Delivery {
   wasEndOfOver: boolean;
   fielder?: string;
   scoringZone?: ScoringZone;
+  shotRegion?: ShotRegion;
 }
 
 export interface BatterStats {

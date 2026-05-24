@@ -60,6 +60,7 @@ export interface MatchState {
     isTeamWicket?: boolean;
   }) => void;
   undoLastBall: () => boolean;
+  setLastDeliveryRegion: (region: any) => void;
 
   // Player management
   setStriker: (name: string) => void;
@@ -615,6 +616,22 @@ export const useMatchStore = create<MatchState>()(
 
           const situation = generateSituation(m);
           set({ match: m, lastCommentary: commentary, situationText: situation });
+        }
+      },
+
+      // ═══════════════════════════════════════
+      //  SET LAST DELIVERY REGION
+      // ═══════════════════════════════════════
+      setLastDeliveryRegion: (region) => {
+        const { match } = get();
+        if (!match || match.complete) return;
+        const m = structuredClone(match);
+        const ci = m.currentInnings;
+        const inn = m.innings[ci];
+        
+        if (inn.deliveries.length > 0) {
+          inn.deliveries[inn.deliveries.length - 1].shotRegion = region;
+          set({ match: m });
         }
       },
 
