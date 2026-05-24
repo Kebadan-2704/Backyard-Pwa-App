@@ -109,9 +109,7 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
-.coin.flipping {
-  animation: flip-coin 3s cubic-bezier(0.1, 0.7, 0.1, 1) forwards;
-}
+
 
 .coin-face {
   position: absolute;
@@ -145,10 +143,7 @@
   transform: rotateX(180deg);
 }
 
-@keyframes flip-coin {
-  0% { transform: rotateX(0); }
-  100% { transform: rotateX(1800deg); }
-}
+
 
 .toss-action-btn {
   background: rgba(255, 255, 255, 0.05);

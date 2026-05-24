@@ -19,6 +19,7 @@ export default function SetupPage() {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isFlipping, setIsFlipping] = useState(false);
   const [coinResult, setCoinResult] = useState<'heads' | 'tails' | null>(null);
+  const [coinRotation, setCoinRotation] = useState(0);
   const [settings, setSettings] = useState<MatchSettings>(createDefaultSettings());
   
   // Wizard state
@@ -83,20 +84,28 @@ export default function SetupPage() {
     navigate('/scorer');
   }
 
-  function handleFlipCoin() {
+  function handleCallAndFlip(call: 'heads' | 'tails') {
     if (!t1.trim() || !t2.trim()) {
       alert("Please enter Team 1 and Team 2 names first.");
       return;
     }
     
+    const landedOn = Math.random() > 0.5 ? 'heads' : 'tails';
+    
+    // Calculate new rotation to ensure realistic spin
+    const currentRotNum = Math.floor(coinRotation / 360) * 360;
+    const baseNewRot = currentRotNum + 1800; // 5 full spins
+    const finalRot = landedOn === 'tails' ? baseNewRot + 180 : baseNewRot;
+
+    setCoinRotation(finalRot);
     setIsFlipping(true);
     setCoinResult(null);
     setTossW('');
 
-    // Play a CSS animation by toggling state, wait 3 seconds
+    // Wait for the CSS transition to finish
     setTimeout(() => {
-      const winner = Math.random() > 0.5 ? t1 : t2;
-      setCoinResult(winner === t1 ? 'heads' : 'tails');
+      setCoinResult(landedOn);
+      const winner = landedOn === call ? t1 : t2;
       setTossW(winner);
       setIsFlipping(false);
     }, 3000);
@@ -209,20 +218,34 @@ export default function SetupPage() {
 
             <div className="toss-container">
               <div className="coin-wrapper">
-                <div className={`coin ${isFlipping ? 'flipping' : ''} ${coinResult === 'tails' ? 'tails-up' : ''}`} style={!isFlipping && coinResult === 'tails' ? { transform: 'rotateX(180deg)' } : {}}>
-                  <div className="coin-face coin-heads">{t1 || 'T1'}</div>
-                  <div className="coin-face coin-tails">{t2 || 'T2'}</div>
+                <div className="coin" style={{ transform: `rotateX(${coinRotation}deg)` }}>
+                  <div className="coin-face coin-heads">HEADS</div>
+                  <div className="coin-face coin-tails">TAILS</div>
                 </div>
               </div>
               
-              <button 
-                className="toss-action-btn" 
-                onClick={handleFlipCoin} 
-                disabled={isFlipping}
-                type="button"
-              >
-                {isFlipping ? 'FLIPPING...' : tossW ? 'FLIP AGAIN' : 'FLIP COIN'}
-              </button>
+              {!tossW && !isFlipping ? (
+                <div style={{ textAlign: 'center', width: '100%' }} className="slide-down">
+                  <p style={{ color: 'var(--text-muted)', marginBottom: 12, fontSize: 13 }}>{t1 || 'Team 1'}, call it:</p>
+                  <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+                    <button className="toss-action-btn" onClick={() => handleCallAndFlip('heads')}>HEADS</button>
+                    <button className="toss-action-btn" onClick={() => handleCallAndFlip('tails')}>TAILS</button>
+                  </div>
+                </div>
+              ) : isFlipping ? (
+                <button className="toss-action-btn" disabled>FLIPPING...</button>
+              ) : (
+                <div style={{ textAlign: 'center', width: '100%' }} className="slide-down">
+                   <p style={{ color: 'var(--chalk)', marginBottom: 4, fontSize: 13 }}>It's <span style={{ color: 'var(--gold)', fontWeight: 800 }}>{coinResult?.toUpperCase()}</span>!</p>
+                   <button 
+                     className="btn-secondary" 
+                     onClick={() => { setTossW(''); setCoinResult(null); }} 
+                     style={{ fontSize: 12, padding: '6px 12px', marginTop: 8 }}
+                   >
+                     RE-FLIP COIN
+                   </button>
+                </div>
+              )}
             </div>
 
             {tossW && !isFlipping && (
