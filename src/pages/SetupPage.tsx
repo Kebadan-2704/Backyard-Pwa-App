@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useMatchStore } from '../store/matchStore';
 import { createDefaultSettings } from '../types/cricket';
 import type { MatchSettings, MatchType, PitchCondition } from '../types/cricket';
-import { ChevronRight, Settings2, ShieldAlert } from 'lucide-react';
+import { ChevronRight, Settings2, ShieldAlert, X, Plus } from 'lucide-react';
 import './SetupPage.css';
 
 export default function SetupPage() {
@@ -31,16 +31,36 @@ export default function SetupPage() {
   const [umpires, setUmpires] = useState('');
   
   // Players
-  const [t1PlayersText, setT1PlayersText] = useState('');
-  const [t2PlayersText, setT2PlayersText] = useState('');
+  const [t1Players, setT1Players] = useState<string[]>([]);
+  const [t2Players, setT2Players] = useState<string[]>([]);
+  const [t1Input, setT1Input] = useState('');
+  const [t2Input, setT2Input] = useState('');
+
+  function handleAddPlayer(team: 1 | 2) {
+    if (team === 1 && t1Input.trim()) {
+      const name = t1Input.trim();
+      if (!t1Players.includes(name)) setT1Players([...t1Players, name]);
+      setT1Input('');
+    }
+    if (team === 2 && t2Input.trim()) {
+      const name = t2Input.trim();
+      if (!t2Players.includes(name)) setT2Players([...t2Players, name]);
+      setT2Input('');
+    }
+  }
+
+  function handleRemovePlayer(team: 1 | 2, index: number) {
+    if (team === 1) setT1Players(t1Players.filter((_, i) => i !== index));
+    if (team === 2) setT2Players(t2Players.filter((_, i) => i !== index));
+  }
 
   function handleStart() {
     if (!t1.trim() || !t2.trim()) return;
     if (!tossW) return;
     
     // Parse players
-    const p1 = t1PlayersText.split(',').map(s => s.trim()).filter(Boolean);
-    const p2 = t2PlayersText.split(',').map(s => s.trim()).filter(Boolean);
+    const p1 = t1Players;
+    const p2 = t2Players;
 
     const actualP1 = p1.length > 0 ? p1 : Array.from({length: settings.playersPerTeam}, (_,i)=>`Player ${i+1}`);
     const actualP2 = p2.length > 0 ? p2 : Array.from({length: settings.playersPerTeam}, (_,i)=>`Player ${i+1}`);
@@ -242,24 +262,51 @@ export default function SetupPage() {
           {showAdvanced && (
             <div className="advanced-settings slide-down">
               <div className="glass-card">
-                <div className="card-title">TEAM ROSTERS (Comma separated)</div>
-                <div className="field" style={{ marginBottom: 12 }}>
-                  <label>{t1} Players</label>
-                  <textarea 
-                    value={t1PlayersText} 
-                    onChange={(e) => setT1PlayersText(e.target.value)}
-                    placeholder="Rahul, Virat, Surya..."
-                    rows={3}
-                  />
+                <div className="card-title">TEAM ROSTERS</div>
+                <div className="field" style={{ marginBottom: 16 }}>
+                  <label>{t1} Players ({t1Players.length})</label>
+                  <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                    <input 
+                      value={t1Input} 
+                      onChange={(e) => setT1Input(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleAddPlayer(1)}
+                      placeholder="Enter player name..."
+                    />
+                    <button className="btn-secondary" style={{ padding: '0 16px' }} onClick={() => handleAddPlayer(1)}>
+                      <Plus size={16} />
+                    </button>
+                  </div>
+                  <div className="roster-pills">
+                    {t1Players.map((p, i) => (
+                      <div key={i} className="roster-pill">
+                        {p}
+                        <X size={14} onClick={() => handleRemovePlayer(1, i)} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
+                
                 <div className="field">
-                  <label>{t2} Players</label>
-                  <textarea 
-                    value={t2PlayersText} 
-                    onChange={(e) => setT2PlayersText(e.target.value)}
-                    placeholder="Warner, Smith, Maxwell..."
-                    rows={3}
-                  />
+                  <label>{t2} Players ({t2Players.length})</label>
+                  <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                    <input 
+                      value={t2Input} 
+                      onChange={(e) => setT2Input(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleAddPlayer(2)}
+                      placeholder="Enter player name..."
+                    />
+                    <button className="btn-secondary" style={{ padding: '0 16px' }} onClick={() => handleAddPlayer(2)}>
+                      <Plus size={16} />
+                    </button>
+                  </div>
+                  <div className="roster-pills">
+                    {t2Players.map((p, i) => (
+                      <div key={i} className="roster-pill">
+                        {p}
+                        <X size={14} onClick={() => handleRemovePlayer(2, i)} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
 

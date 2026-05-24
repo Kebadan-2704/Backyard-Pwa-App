@@ -20,6 +20,7 @@ import { generateCommentary, generateSituation } from '../utils/commentary';
 import { syncLiveMatch } from '../lib/firebase';
 import { useStatsStore } from './statsStore';
 import { useAppStore } from './appStore';
+import { idbPersistStorage } from '../lib/storage';
 
 export interface MatchState {
   match: Match | null;
@@ -426,7 +427,7 @@ export const useMatchStore = create<MatchState>()(
       // ═══════════════════════════════════════
       //  ADD EXTRA — Wide, No-ball, Bye, Leg-bye, Penalty
       // ═══════════════════════════════════════
-      addExtra: (type, extraRuns = 1) => {
+      addExtra: (type, extraRuns = 1, batterRuns = 0) => {
         const { match } = get();
         if (!match || match.complete) return;
         const m = structuredClone(match);
@@ -438,7 +439,7 @@ export const useMatchStore = create<MatchState>()(
 
         const delivery: Delivery = {
           id: Date.now(),
-          runs: type === 'penalty' ? 5 : extraRuns,
+          runs: type === 'penalty' ? 5 : (extraRuns + batterRuns),
           wide: type === 'wide',
           noball: type === 'noball',
           wicket: false,
@@ -461,10 +462,10 @@ export const useMatchStore = create<MatchState>()(
 
         // Update extras
         switch (type) {
-          case 'wide': inn.extras.wide += delivery.runs; break;
-          case 'noball': inn.extras.noball += delivery.runs; break;
-          case 'bye': inn.extras.byes += delivery.runs; break;
-          case 'legbye': inn.extras.legByes += delivery.runs; break;
+          case 'wide': inn.extras.wide += extraRuns; break;
+          case 'noball': inn.extras.noball += extraRuns; break;
+          case 'bye': inn.extras.byes += extraRuns; break;
+          case 'legbye': inn.extras.legByes += extraRuns; break;
           case 'penalty': inn.extras.penalty += 5; break;
         }
 
@@ -532,7 +533,7 @@ export const useMatchStore = create<MatchState>()(
         if (type === 'wide') {
           if (inn.currentBowler) {
             ensureBowler(inn, inn.currentBowler);
-            inn.bowlers[inn.currentBowler].wides++;
+            inn.bowlers[inn.currentBowler].wides += extraRuns;
             inn.bowlers[inn.currentBowler].runsConceded += delivery.runs;
           }
           // Update partnership
@@ -541,12 +542,12 @@ export const useMatchStore = create<MatchState>()(
             partnership.runs += delivery.runs;
           }
           // Swap on odd wide runs (more than 1 run off a wide)
-          if (delivery.runs % 2 === 0) {
-            // Even wide runs (1 = odd → swap, 3 = odd → swap... wait, standard wide is 1 run)
-            // Wide of 1 run doesn't swap (batter stays same end)
+          // Wide is 1. If they ran 1, extraRuns = 2 (1 wide + 1 run). So ran = extraRuns - 1.
+          const ran = extraRuns - 1;
+          if (ran % 2 === 1) {
+             [inn.striker, inn.nonStriker] = [inn.nonStriker, inn.striker];
+             delivery.swappedBatters = true;
           }
-          // Actually: wide itself doesn't swap batters. Additional runs off wide could swap.
-          // Standard: wide = 1 run, no swap. Wide + overthrow = might swap.
 
           // Check chase won
           if (checkAndEndInnings(m, inn, ci, getLegalBallCount(inn.deliveries), milestones, null, set, get)) return;
@@ -560,13 +561,39 @@ export const useMatchStore = create<MatchState>()(
         if (type === 'noball') {
           if (inn.currentBowler) {
             ensureBowler(inn, inn.currentBowler);
-            inn.bowlers[inn.currentBowler].noballs++;
+            inn.bowlers[inn.currentBowler].noballs += extraRuns;
             inn.bowlers[inn.currentBowler].runsConceded += delivery.runs;
           }
+          if (inn.striker && batterRuns > 0) {
+            ensureBatter(inn, inn.striker);
+            const b = inn.batters[inn.striker];
+            b.runs += batterRuns;
+            b.balls++;
+            if (batterRuns === 4) b.fours++;
+            if (batterRuns === 6) b.sixes++;
+          } else if (inn.striker) {
+             ensureBatter(inn, inn.striker);
+             inn.batters[inn.striker].balls++;
+          }
+
           // Update partnership
           const partnership = getCurrentPartnership(inn);
           if (partnership) {
             partnership.runs += delivery.runs;
+            partnership.balls++;
+          }
+
+          // Swap on odd batter runs (or odd extra runs? Usually batters swap based on total runs run)
+          // If total runs is odd (excluding boundary), they swap. 
+          // Note: If batter hits 4 or 6 off a no ball, they don't swap.
+          if (batterRuns > 0 && batterRuns % 2 === 1 && batterRuns !== 5) {
+             [inn.striker, inn.nonStriker] = [inn.nonStriker, inn.striker];
+             delivery.swappedBatters = true;
+          } else if (batterRuns === 0 && extraRuns > 1 && (extraRuns - 1) % 2 === 1) {
+             // they ran byes off a no ball. extraRuns = 1 noball + X byes.
+             // if X is odd, they swap.
+             [inn.striker, inn.nonStriker] = [inn.nonStriker, inn.striker];
+             delivery.swappedBatters = true;
           }
 
           // Check chase won
@@ -1089,6 +1116,7 @@ export const useMatchStore = create<MatchState>()(
     }),
     {
       name: 'cricket-active-match',
+      storage: idbPersistStorage,
       partialize: (state) => ({
         match: state.match,
         isFreeHit: state.isFreeHit,

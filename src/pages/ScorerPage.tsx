@@ -10,6 +10,7 @@ import OverSummaryModal from '../components/modals/OverSummaryModal';
 import ResultModal from '../components/modals/ResultModal';
 import ScorecardModal from '../components/modals/ScorecardModal';
 import DLSModal from '../components/modals/DLSModal';
+import ExtrasModal from '../components/modals/ExtrasModal';
 import CelebrationOverlay from '../components/CelebrationOverlay';
 import { useState, useEffect } from 'react';
 import { Play, CloudRain, DownloadCloud, AlertTriangle } from 'lucide-react';
@@ -35,6 +36,8 @@ export default function ScorerPage() {
   const [showWicketModal, setShowWicketModal] = useState(false);
   const [showScorecard, setShowScorecard] = useState(false);
   const [showDLS, setShowDLS] = useState(false);
+  const [showExtrasModal, setShowExtrasModal] = useState(false);
+  const [selectedExtraType, setSelectedExtraType] = useState<'wide' | 'noball' | 'bye' | 'legbye' | 'penalty'>('wide');
   const [importCode, setImportCode] = useState('');
   const [isImporting, setIsImporting] = useState(false);
   
@@ -169,6 +172,14 @@ export default function ScorerPage() {
               endInnings();
             }
           }}
+          onExtra={(type) => {
+             if (type === 'penalty') {
+                useMatchStore.getState().addExtra('penalty', 5);
+             } else {
+                setSelectedExtraType(type);
+                setShowExtrasModal(true);
+             }
+          }}
           disabled={!isActiveScorer || showBatterSelectForced || showBowlerSelectForced || match.complete} 
         />
       </div>
@@ -210,6 +221,13 @@ export default function ScorerPage() {
 
       {showInningsBreak && (
         <ScorecardModal onClose={() => dismissInningsBreak()} initialInnings={0} />
+      )}
+
+      {showExtrasModal && (
+        <ExtrasModal 
+           initialType={selectedExtraType}
+           onClose={() => setShowExtrasModal(false)} 
+        />
       )}
 
       {/* Floating Action Button for Scorecard (only if not complete) */}

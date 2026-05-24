@@ -6,6 +6,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { ToastMessage, ThemeMode, AppSettings, ModalType } from '../types/app';
 import { DEFAULT_APP_SETTINGS } from '../types/app';
+import { idbPersistStorage } from '../lib/storage';
 
 interface AppState {
   // Settings
@@ -82,6 +83,7 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'cricket-app-settings',
+      storage: idbPersistStorage,
       partialize: (state) => ({
         settings: state.settings,
         deviceId: state.deviceId,

@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Tournament, TournamentTeam, Fixture, MatchSettings, TournamentFormat } from '../types/cricket';
 import { createDefaultSettings } from '../types/cricket';
+import { idbPersistStorage } from '../lib/storage';
 
 // ═══════════════════════════════════════════════════════
 //  TOURNAMENT STORE
@@ -327,7 +328,8 @@ export const useTournamentStore = create<TournamentState>()(
       },
     }),
     {
-      name: 'backyard-tournament-v1',
+      name: 'cricket-tournament',
+      storage: idbPersistStorage,
     },
   ),
 );

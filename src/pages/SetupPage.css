@@ -174,3 +174,32 @@
   cursor: not-allowed;
   transform: none;
 }
+
+/* Roster Pills */
+.roster-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.roster-pill {
+  background: rgba(245, 166, 35, 0.1);
+  border: 1px solid var(--gold);
+  color: var(--text-primary);
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.roster-pill svg {
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+
+.roster-pill svg:hover {
+  color: #ff4444;
+}

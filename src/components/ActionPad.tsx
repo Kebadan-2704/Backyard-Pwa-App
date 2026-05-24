@@ -7,10 +7,11 @@ import './ActionPad.css';
 interface Props {
   onWicket: () => void;
   onEndInnings?: () => void;
+  onExtra: (type: 'wide' | 'noball' | 'bye' | 'legbye' | 'penalty') => void;
   disabled?: boolean;
 }
 
-export default function ActionPad({ onWicket, onEndInnings, disabled = false }: Props) {
+export default function ActionPad({ onWicket, onEndInnings, onExtra, disabled = false }: Props) {
   const addRun = useMatchStore((s) => s.addRun);
   const addExtra = useMatchStore((s) => s.addExtra);
   const undoLastBall = useMatchStore((s) => s.undoLastBall);
@@ -39,12 +40,9 @@ export default function ActionPad({ onWicket, onEndInnings, disabled = false }: 
 
   function handleExtra(type: 'wide' | 'noball' | 'bye' | 'legbye' | 'penalty') {
     if (disabled) return;
-    addExtra(type);
     haptic.tap();
     sound.playTap();
-    if (type === 'wide') sound.speakCommentary('Wide ball.');
-    else if (type === 'noball') sound.speakCommentary('No ball! Free hit coming up.');
-    else if (type === 'bye' || type === 'legbye') sound.speakCommentary('Extra runs.');
+    onExtra(type);
   }
 
   function handleWicket() {
