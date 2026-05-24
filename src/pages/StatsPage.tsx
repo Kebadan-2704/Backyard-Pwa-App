@@ -3,7 +3,7 @@ import { Search, Trophy, Medal, Users, User, Play } from 'lucide-react';
 import { useStatsStore } from '../store/statsStore';
 import { useNavigate } from 'react-router-dom';
 import PlayerProfileModal from '../components/modals/PlayerProfileModal';
-import type { PlayerProfile } from '../types/cricket';
+import type { PlayerProfile } from '../types/stats';
 
 export default function StatsPage() {
   const navigate = useNavigate();

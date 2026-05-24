@@ -1,5 +1,5 @@
 import { X, Trophy, Target, TrendingUp } from 'lucide-react';
-import type { PlayerProfile } from '../../types/cricket';
+import type { PlayerProfile } from '../../types/stats';
 import './Modals.css';
 
 interface Props {

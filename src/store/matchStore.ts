@@ -51,7 +51,7 @@ export interface MatchState {
 
   // Scoring
   addRun: (runs: number) => void;
-  addExtra: (type: 'wide' | 'noball' | 'bye' | 'legbye' | 'penalty', runs?: number) => void;
+  addExtra: (type: 'wide' | 'noball' | 'bye' | 'legbye' | 'penalty', runs?: number, batterRuns?: number) => void;
   submitWicket: (config: {
     type: DismissalType;
     dismissedBatter: 'striker' | 'nonStriker';
