@@ -23,10 +23,12 @@ export default function ScorerPage() {
   const showBowlerSelect = useMatchStore((s) => s.showBowlerSelect);
   const showBatterSelect = useMatchStore((s) => s.showBatterSelect);
   const showOverSummary = useMatchStore((s) => s.showOverSummary);
+  const showInningsBreak = useMatchStore((s) => s.showInningsBreak);
   
   const dismissBowlerSelect = useMatchStore((s) => s.dismissBowlerSelect);
   const dismissBatterSelect = useMatchStore((s) => s.dismissBatterSelect);
   const dismissOverSummary = useMatchStore((s) => s.dismissOverSummary);
+  const dismissInningsBreak = useMatchStore((s) => s.dismissInningsBreak);
 
   const celebrationsEnabled = useAppStore((s) => s.settings.autoPlayCelebrations);
   
@@ -204,6 +206,10 @@ export default function ScorerPage() {
 
       {showScorecard && (
         <ScorecardModal onClose={() => setShowScorecard(false)} />
+      )}
+
+      {showInningsBreak && (
+        <ScorecardModal onClose={() => dismissInningsBreak()} initialInnings={0} />
       )}
 
       {/* Floating Action Button for Scorecard (only if not complete) */}

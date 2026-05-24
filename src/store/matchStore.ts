@@ -28,6 +28,7 @@ export interface MatchState {
   showBowlerSelect: boolean;
   showBatterSelect: boolean;
   showOverSummary: boolean;
+  showInningsBreak: boolean;
   isFreeHit: boolean;
   lastCommentary: string;
   situationText: string;
@@ -80,6 +81,7 @@ export interface MatchState {
   dismissOverSummary: () => void;
   dismissBowlerSelect: () => void;
   dismissBatterSelect: () => void;
+  dismissInningsBreak: () => void;
 }
 
 function ensureBatter(inn: Innings, name: string, position?: number): void {
@@ -211,6 +213,7 @@ export const useMatchStore = create<MatchState>()(
       showBowlerSelect: false,
       showBatterSelect: false,
       showOverSummary: false,
+      showInningsBreak: false,
       isFreeHit: false,
       lastCommentary: '',
       situationText: '',
@@ -226,11 +229,11 @@ export const useMatchStore = create<MatchState>()(
           config.umpires, config.seriesName,
         );
         m.activeScorerId = useAppStore.getState().deviceId;
-        set({ match: m, isFreeHit: false, pendingMilestones: [], lastOverSummary: null, lastCommentary: '', situationText: '' });
+        set({ match: m, isFreeHit: false, pendingMilestones: [], lastOverSummary: null, lastCommentary: '', situationText: '', showInningsBreak: false });
       },
 
       newMatch: () => {
-        set({ match: null, isFreeHit: false, pendingMilestones: [], lastOverSummary: null, showBowlerSelect: false, showBatterSelect: false, lastCommentary: '', situationText: '' });
+        set({ match: null, isFreeHit: false, pendingMilestones: [], lastOverSummary: null, showBowlerSelect: false, showBatterSelect: false, showInningsBreak: false, lastCommentary: '', situationText: '' });
       },
 
       updateMatchSettings: (partial) => {
@@ -249,6 +252,7 @@ export const useMatchStore = create<MatchState>()(
           lastOverSummary: null, 
           showBowlerSelect: false, 
           showBatterSelect: false, 
+          showInningsBreak: false,
           lastCommentary: 'Match resumed from history.', 
           situationText: generateSituation(m) 
         });
@@ -999,7 +1003,7 @@ export const useMatchStore = create<MatchState>()(
         if (ci === 0) {
           m.currentInnings = 1;
           m.innings[1] = createBlankInnings();
-          set({ match: m, isFreeHit: false, showBowlerSelect: false, showBatterSelect: false, showOverSummary: false });
+          set({ match: m, isFreeHit: false, showBowlerSelect: false, showBatterSelect: false, showOverSummary: false, showInningsBreak: true });
         } else {
           // 2nd innings done — declare winner
           const i1 = m.innings[0];
@@ -1081,6 +1085,7 @@ export const useMatchStore = create<MatchState>()(
       dismissOverSummary: () => set({ showOverSummary: false, lastOverSummary: null }),
       dismissBowlerSelect: () => set({ showBowlerSelect: false }),
       dismissBatterSelect: () => set({ showBatterSelect: false }),
+      dismissInningsBreak: () => set({ showInningsBreak: false }),
     }),
     {
       name: 'cricket-active-match',

@@ -23,7 +23,7 @@ export default function ScorecardModal({ onClose, initialInnings, matchData }: P
   const inn = match.innings[activeInnings];
   const team = match.teams[activeInnings];
   const bowlingTeam = match.teams[activeInnings === 0 ? 1 : 0];
-  const hasSecondInnings = match.innings[1].deliveries.length > 0;
+  const hasSecondInnings = match.currentInnings === 1 || match.innings[1].deliveries.length > 0;
 
   // Manhattan chart data
   const overData = inn.overSummaries.map((s: any) => ({
