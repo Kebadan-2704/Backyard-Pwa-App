@@ -100,6 +100,8 @@ function ensureBowler(inn: Innings, name: string): void {
   if (!name) return;
   if (!inn.bowlers[name]) {
     inn.bowlers[name] = createBowlerStats();
+  } else {
+    inn.bowlers[name].spells = inn.bowlers[name].spells || [];
   }
 }
 
@@ -288,6 +290,9 @@ export const useMatchStore = create<MatchState>()(
           inn.overSummaries = inn.overSummaries || [];
           inn.fallOfWickets = inn.fallOfWickets || [];
           inn.partnerships = inn.partnerships || [];
+          Object.values(inn.bowlers).forEach(bw => {
+            bw.spells = bw.spells || [];
+          });
         });
         set({ 
           match: matchData, 
@@ -315,6 +320,9 @@ export const useMatchStore = create<MatchState>()(
           i.overSummaries = i.overSummaries || [];
           i.fallOfWickets = i.fallOfWickets || [];
           i.partnerships = i.partnerships || [];
+          Object.values(i.bowlers).forEach(bw => {
+            bw.spells = bw.spells || [];
+          });
         });
         const ci = m.currentInnings;
         const inn = m.innings[ci];
@@ -487,6 +495,9 @@ export const useMatchStore = create<MatchState>()(
           i.overSummaries = i.overSummaries || [];
           i.fallOfWickets = i.fallOfWickets || [];
           i.partnerships = i.partnerships || [];
+          Object.values(i.bowlers).forEach(bw => {
+            bw.spells = bw.spells || [];
+          });
         });
         const ci = m.currentInnings;
         const inn = m.innings[ci];
@@ -704,6 +715,9 @@ export const useMatchStore = create<MatchState>()(
           i.overSummaries = i.overSummaries || [];
           i.fallOfWickets = i.fallOfWickets || [];
           i.partnerships = i.partnerships || [];
+          Object.values(i.bowlers).forEach(bw => {
+            bw.spells = bw.spells || [];
+          });
         });
         const ci = m.currentInnings;
         const inn = m.innings[ci];
