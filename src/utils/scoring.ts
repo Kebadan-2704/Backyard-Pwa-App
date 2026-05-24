@@ -6,11 +6,13 @@ import type { Delivery, Innings, OverSummary, BowlerStats, Match } from '../type
 
 /** Count legal (non-wide, non-noball) deliveries */
 export function getLegalBallCount(deliveries: Delivery[]): number {
+  if (!deliveries) return 0;
   return deliveries.filter(d => !d.wide && !d.noball).length;
 }
 
 /** Format overs as "4.3" string */
 export function getOversString(deliveries: Delivery[]): string {
+  if (!deliveries) return '0.0';
   const legal = getLegalBallCount(deliveries);
   return `${Math.floor(legal / 6)}.${legal % 6}`;
 }

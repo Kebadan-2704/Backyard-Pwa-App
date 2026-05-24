@@ -49,12 +49,12 @@ export default function SpectatorPage() {
     );
   }
 
-  // Same extraction logic as Scoreboard
   const ci = match.currentInnings;
   const inn = match.innings[ci];
   const team = match.teams[ci];
-  const oversStr = getOversString(inn.deliveries);
-  const rr = getRunRate(inn.runs, getLegalBallCount(inn.deliveries));
+  const deliveries = inn.deliveries || [];
+  const oversStr = getOversString(deliveries);
+  const rr = getRunRate(inn.runs, getLegalBallCount(deliveries));
 
   let targetRuns = 0;
   let needed = 0;
@@ -64,11 +64,11 @@ export default function SpectatorPage() {
   if (ci === 1) {
     targetRuns = match.innings[0].runs + 1;
     needed = targetRuns - inn.runs;
-    ballsLeft = match.settings.overs * 6 - getLegalBallCount(inn.deliveries);
+    ballsLeft = match.settings.overs * 6 - getLegalBallCount(deliveries);
     rrr = getRequiredRunRate(targetRuns, inn.runs, ballsLeft);
   }
 
-  const lastBalls = inn.deliveries.slice(-6);
+  const lastBalls = deliveries.slice(-6);
 
   return (
     <div className="view-container" style={{ paddingTop: 40 }}>

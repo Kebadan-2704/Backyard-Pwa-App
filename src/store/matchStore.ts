@@ -290,7 +290,7 @@ export const useMatchStore = create<MatchState>()(
           inn.overSummaries = inn.overSummaries || [];
           inn.fallOfWickets = inn.fallOfWickets || [];
           inn.partnerships = inn.partnerships || [];
-          Object.values(inn.bowlers).forEach(bw => {
+          Object.values(inn.bowlers || {}).forEach(bw => {
             bw.spells = bw.spells || [];
           });
         });
@@ -320,7 +320,7 @@ export const useMatchStore = create<MatchState>()(
           i.overSummaries = i.overSummaries || [];
           i.fallOfWickets = i.fallOfWickets || [];
           i.partnerships = i.partnerships || [];
-          Object.values(i.bowlers).forEach(bw => {
+          Object.values(i.bowlers || {}).forEach(bw => {
             bw.spells = bw.spells || [];
           });
         });
@@ -495,7 +495,7 @@ export const useMatchStore = create<MatchState>()(
           i.overSummaries = i.overSummaries || [];
           i.fallOfWickets = i.fallOfWickets || [];
           i.partnerships = i.partnerships || [];
-          Object.values(i.bowlers).forEach(bw => {
+          Object.values(i.bowlers || {}).forEach(bw => {
             bw.spells = bw.spells || [];
           });
         });
@@ -715,7 +715,7 @@ export const useMatchStore = create<MatchState>()(
           i.overSummaries = i.overSummaries || [];
           i.fallOfWickets = i.fallOfWickets || [];
           i.partnerships = i.partnerships || [];
-          Object.values(i.bowlers).forEach(bw => {
+          Object.values(i.bowlers || {}).forEach(bw => {
             bw.spells = bw.spells || [];
           });
         });
