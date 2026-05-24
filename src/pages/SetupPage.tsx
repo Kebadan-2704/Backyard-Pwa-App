@@ -63,17 +63,16 @@ export default function SetupPage() {
     const p1 = t1Players;
     const p2 = t2Players;
 
-    const actualP1 = p1.length > 0 ? p1 : Array.from({length: settings.playersPerTeam}, (_,i)=>`Player ${i+1}`);
-    const actualP2 = p2.length > 0 ? p2 : Array.from({length: settings.playersPerTeam}, (_,i)=>`Player ${i+1}`);
+    const actualP1 = p1;
+    const actualP2 = p2;
     const maxPlayers = Math.max(actualP1.length, actualP2.length, settings.playersPerTeam);
-    const finalMaxWickets = Math.min(settings.maxWickets, maxPlayers - 1);
 
     startMatch({
       team1: t1,
       team2: t2,
       players1: actualP1,
       players2: actualP2,
-      settings: { ...settings, overs, playersPerTeam: maxPlayers, maxWickets: finalMaxWickets },
+      settings: { ...settings, overs, playersPerTeam: maxPlayers },
       tossWinner: tossW,
       tossChoice: tossC,
       matchType,
@@ -135,7 +134,7 @@ export default function SetupPage() {
         </div>
       )}
 
-      {step === 1 && (
+      {step === 2 && (
         <div className="slide-down">
           <div className="glass-card">
             <div className="card-title">QUICK GAME SETUP</div>
@@ -148,16 +147,19 @@ export default function SetupPage() {
               <input value={t2} onChange={(e) => setT2(e.target.value.toUpperCase())} maxLength={15} />
             </div>
           </div>
-          <button className="btn-primary" onClick={() => {
-            if (!t1.trim() || !t2.trim()) alert("Please enter both team names");
-            else setStep(2);
-          }}>
-            NEXT: MATCH TYPE
-          </button>
+          <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
+            <button className="btn-secondary" onClick={() => setStep(1)}>BACK</button>
+            <button className="btn-primary" onClick={() => {
+              if (!t1.trim() || !t2.trim()) alert("Please enter both team names");
+              else setStep(3);
+            }}>
+              NEXT: TOSS & RULES
+            </button>
+          </div>
         </div>
       )}
 
-      {step === 2 && (
+      {step === 1 && (
         <div className="slide-down">
           <div className="glass-card">
             <div className="card-title">MATCH FORMAT</div>
@@ -191,10 +193,9 @@ export default function SetupPage() {
             )}
           </div>
           
-          <div style={{ display: 'flex', gap: 12 }}>
-            <button className="btn-secondary" onClick={() => setStep(1)}>BACK</button>
-            <button className="btn-primary" onClick={() => setStep(3)}>NEXT: TOSS & RULES</button>
-          </div>
+          <button className="btn-primary" onClick={() => setStep(2)}>
+            NEXT: TEAMS
+          </button>
         </div>
       )}
 

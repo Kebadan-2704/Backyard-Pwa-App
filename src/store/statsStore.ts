@@ -83,9 +83,20 @@ export const useStatsStore = create<StatsStoreState>()(
             Object.keys(inn.bowlers).forEach(name => allMatchPlayers.add(name));
           });
 
-          // Ensure all players exist
+          // Ensure all players exist and deeply clone them so we can mutate safely
           allMatchPlayers.forEach(pName => {
-            if (!players[pName]) players[pName] = createEmptyPlayer(pName);
+            if (!players[pName]) {
+              players[pName] = createEmptyPlayer(pName);
+            } else {
+              players[pName] = {
+                ...players[pName],
+                batting: { ...players[pName].batting },
+                bowling: { 
+                  ...players[pName].bowling, 
+                  bestBowling: { ...players[pName].bowling.bestBowling } 
+                }
+              };
+            }
             // Increment matches played
             players[pName].batting.matches += 1;
             players[pName].bowling.matches += 1;
@@ -111,7 +122,7 @@ export const useStatsStore = create<StatsStoreState>()(
 
             // Bowling
             Object.entries(inn.bowlers).forEach(([name, b]) => {
-              if (b.ballsBowled > 0) {
+              if (b.ballsBowled > 0 || b.runsConceded > 0 || b.wickets > 0) {
                 const p = players[name].bowling;
                 p.innings += 1;
                 p.ballsBowled += b.ballsBowled;
