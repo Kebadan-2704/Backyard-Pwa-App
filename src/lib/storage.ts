@@ -1,5 +1,6 @@
 import { get, set, del } from 'idb-keyval';
-import { StateStorage, createJSONStorage } from 'zustand/middleware';
+import { createJSONStorage } from 'zustand/middleware';
+import type { StateStorage } from 'zustand/middleware';
 
 // Custom IndexedDB storage adapter for Zustand
 const idbStorage: StateStorage = {
