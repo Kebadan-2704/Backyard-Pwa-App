@@ -18,9 +18,7 @@ async function resolveStackTrace() {
   const rawSourceMap = JSON.parse(fs.readFileSync(mapPath, 'utf8'));
   const consumer = await new sourceMap.SourceMapConsumer(rawSourceMap);
   
-  console.log('xr:', consumer.originalPositionFor({ line: 11, column: 32309 }));
-  console.log('Sr:', consumer.originalPositionFor({ line: 11, column: 32367 }));
-  console.log('H_e:', consumer.originalPositionFor({ line: 80, column: 143140 }));
+  console.log('lae:', consumer.originalPositionFor({ line: 37, column: 58343 }));
   
   consumer.destroy();
 }

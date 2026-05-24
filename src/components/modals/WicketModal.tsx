@@ -42,7 +42,7 @@ export default function WicketModal({ onClose }: Props) {
 
   // Get fielding team players
   const fieldingTeamIdx = ci === 0 ? 1 : 0;
-  const fieldingPlayers = match.players[fieldingTeamIdx];
+  const fieldingPlayers = match.players ? match.players[fieldingTeamIdx] : [];
 
   function handleTypeChange(newType: DismissalType) {
     setType(newType);

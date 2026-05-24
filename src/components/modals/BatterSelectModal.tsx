@@ -19,7 +19,7 @@ export default function BatterSelectModal({ onClose }: Props) {
 
   const ci = match.currentInnings;
   const battingTeamIdx = ci;
-  const teamPlayers = match.players[battingTeamIdx];
+  const teamPlayers = match.players ? match.players[battingTeamIdx] : [];
   const inn = match.innings[ci];
 
   const needsStriker = !inn.striker;

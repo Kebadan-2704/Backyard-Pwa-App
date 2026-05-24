@@ -18,7 +18,7 @@ export default function BowlerSelectModal({ onClose }: Props) {
 
   const ci = match.currentInnings;
   const bowlingTeamIdx = ci === 0 ? 1 : 0;
-  const teamPlayers = match.players[bowlingTeamIdx];
+  const teamPlayers = match.players ? match.players[bowlingTeamIdx] : [];
   const inn = match.innings[ci];
   const lastBowler = inn.overSummaries.length > 0 
     ? inn.overSummaries[inn.overSummaries.length - 1].bowler 
