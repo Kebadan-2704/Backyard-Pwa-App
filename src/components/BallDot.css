@@ -1,0 +1,66 @@
+.ball-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--chalk);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform var(--transition-fast);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.ball-label {
+  line-height: 1;
+}
+
+.ball-shape {
+  font-size: 8px;
+  line-height: 1;
+  opacity: 0.7;
+}
+
+/* Pattern overlays for colorblind accessibility */
+.ball-dot.run0 { background: var(--text-faint); }
+.ball-dot.run1 { background: var(--blue); }
+.ball-dot.run4 { 
+  background: var(--green);
+  /* Diagonal stripes pattern for colorblind */
+  background-image: repeating-linear-gradient(
+    45deg, transparent, transparent 3px, rgba(255,255,255,0.15) 3px, rgba(255,255,255,0.15) 4px
+  );
+}
+.ball-dot.run6 { 
+  background: var(--purple);
+  /* Star pattern for colorblind */
+  background-image: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.2) 0%, transparent 40%);
+}
+.ball-dot.wicket { 
+  background: var(--leather);
+  /* Cross hatch for colorblind */
+  background-image: repeating-linear-gradient(
+    0deg, transparent, transparent 4px, rgba(255,255,255,0.15) 4px, rgba(255,255,255,0.15) 5px
+  );
+}
+.ball-dot.wide { background: var(--gold); color: var(--ink); }
+.ball-dot.noball { background: var(--gold); color: var(--ink); border: 2px solid var(--leather); width: 30px; height: 30px; }
+.ball-dot.bye { background: var(--text-muted); border: 1px dashed rgba(255,255,255,0.3); }
+
+.ball-dot.free-hit-dot {
+  box-shadow: 0 0 0 2px var(--gold), 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.animate-pop {
+  animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes pop-in {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}

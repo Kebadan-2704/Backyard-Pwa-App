@@ -1,0 +1,124 @@
+.splash-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-body);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.4s ease-out;
+}
+
+.splash-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 50% 50%, rgba(0, 242, 254, 0.15), transparent 60%),
+    linear-gradient(180deg, var(--bg-body) 0%, #080A0F 100%);
+  pointer-events: none;
+}
+
+.splash-screen.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.splash-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.splash-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 242, 254, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 30px rgba(0, 242, 254, 0.2);
+  animation: logo-pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes logo-pulse {
+  from { box-shadow: 0 0 20px rgba(0, 242, 254, 0.1); transform: scale(0.95); }
+  to { box-shadow: 0 0 50px rgba(0, 242, 254, 0.4); transform: scale(1.05); }
+}
+
+.cricket-ball {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--magenta), #FF3366);
+  box-shadow: inset -4px -4px 10px rgba(0,0,0,0.3);
+  position: relative;
+  animation: ball-spin 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.cricket-ball::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 100%;
+  background: rgba(255,255,255,0.4);
+  transform: translateX(-50%);
+}
+
+@keyframes ball-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.splash-brand {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: var(--chalk);
+  margin: 0;
+  text-align: center;
+}
+
+.splash-brand span {
+  color: transparent;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  -webkit-background-clip: text;
+  display: block;
+  font-size: 16px;
+  letter-spacing: 8px;
+  margin-bottom: 4px;
+}
+
+.splash-loader {
+  width: 140px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  margin-top: 20px;
+}
+
+.splash-loader-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 50%;
+  background: linear-gradient(90deg, var(--gold), var(--magenta));
+  border-radius: 4px;
+  animation: load-bar 1.8s ease-in-out infinite;
+}
+
+@keyframes load-bar {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}

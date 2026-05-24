@@ -1,0 +1,141 @@
+.broadcast-screen {
+  width: 100vw;
+  height: 100vh;
+  /* Pure Chroma Key Green for streaming software */
+  background-color: #00FF00;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 40px;
+  overflow: hidden;
+  position: relative;
+}
+
+.tv-bug {
+  width: 600px;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  font-family: var(--font-display);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  animation: slideUpTv 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tv-bug.offline {
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #FFF;
+  letter-spacing: 2px;
+}
+
+.tv-bug-top {
+  display: flex;
+  align-items: stretch;
+  height: 50px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tv-team {
+  width: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 800;
+  color: #FFF;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.tv-score {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding-left: 20px;
+  font-size: 38px;
+  font-weight: 800;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.tv-wickets {
+  font-size: 24px;
+  color: var(--leather-light);
+}
+
+.tv-overs {
+  width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: var(--chalk);
+  font-weight: 600;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tv-rr {
+  width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--text-muted);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tv-bug-bottom {
+  display: flex;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tv-batter, .tv-bowler {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  font-size: 16px;
+  color: var(--chalk);
+  font-family: var(--font-body);
+}
+
+.tv-bowler {
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tv-label {
+  font-size: 11px;
+  color: var(--gold);
+  margin-right: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+.tv-batter-score, .tv-bowler-score {
+  margin-left: auto;
+  font-weight: 700;
+  color: var(--chalk);
+}
+
+.tv-bug-footer {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--leather-dark);
+  color: #FFF;
+  font-size: 13px;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+@keyframes slideUpTv {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}

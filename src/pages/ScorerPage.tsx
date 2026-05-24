@@ -1,0 +1,153 @@
+import { useMatchStore } from '../store/matchStore';
+import { useAppStore } from '../store/appStore';
+import { useNavigate } from 'react-router-dom';
+import Scoreboard from '../components/Scoreboard';
+import ActionPad from '../components/ActionPad';
+import WicketModal from '../components/modals/WicketModal';
+import BowlerSelectModal from '../components/modals/BowlerSelectModal';
+import BatterSelectModal from '../components/modals/BatterSelectModal';
+import OverSummaryModal from '../components/modals/OverSummaryModal';
+import ResultModal from '../components/modals/ResultModal';
+import ScorecardModal from '../components/modals/ScorecardModal';
+import DLSModal from '../components/modals/DLSModal';
+import CelebrationOverlay from '../components/CelebrationOverlay';
+import { useState } from 'react';
+import { Play, CloudRain } from 'lucide-react';
+
+export default function ScorerPage() {
+  const navigate = useNavigate();
+  const match = useMatchStore((s) => s.match);
+  const endInnings = useMatchStore((s) => s.endInnings);
+  
+  const showBowlerSelect = useMatchStore((s) => s.showBowlerSelect);
+  const showBatterSelect = useMatchStore((s) => s.showBatterSelect);
+  const showOverSummary = useMatchStore((s) => s.showOverSummary);
+  
+  const dismissBowlerSelect = useMatchStore((s) => s.dismissBowlerSelect);
+  const dismissBatterSelect = useMatchStore((s) => s.dismissBatterSelect);
+  const dismissOverSummary = useMatchStore((s) => s.dismissOverSummary);
+
+  const celebrationsEnabled = useAppStore((s) => s.settings.autoPlayCelebrations);
+  
+  const [showWicketModal, setShowWicketModal] = useState(false);
+  const [showScorecard, setShowScorecard] = useState(false);
+  const [showDLS, setShowDLS] = useState(false);
+
+  if (!match) {
+    return (
+      <div className="view-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh', textAlign: 'center' }}>
+        <h2 style={{ fontSize: 24, color: 'var(--gold)', marginBottom: 16 }}>No Active Match</h2>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: 24 }}>Start a new match from the setup screen.</p>
+        <button className="btn-primary" onClick={() => navigate('/setup')} style={{ maxWidth: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+          <Play size={18} /> START MATCH
+        </button>
+      </div>
+    );
+  }
+
+  const ci = match.currentInnings;
+  const inn = match.innings[ci];
+  const needsStriker = !inn.striker;
+  const needsNonStriker = !!inn.striker && !inn.nonStriker;
+  const needsBowler = !inn.currentBowler;
+  
+  // Enforce required selections
+  const showBatterSelectForced = (needsStriker || needsNonStriker) && inn.wickets < match.settings.maxWickets && !match.complete;
+  const showBowlerSelectForced = needsBowler && !match.complete && inn.wickets < match.settings.maxWickets;
+
+  return (
+    <div className="scoring-section" style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
+      
+      <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px', paddingBottom: '40px' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+          <button 
+            onClick={() => setShowDLS(true)}
+            style={{ 
+              display: 'flex', alignItems: 'center', gap: 6, 
+              background: 'var(--panel)', color: 'var(--blue)', 
+              border: '1px solid var(--border)', borderRadius: 20, 
+              padding: '4px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' 
+            }}
+          >
+            <CloudRain size={14} /> DLS / RAIN DELAY
+          </button>
+        </div>
+        <Scoreboard />
+      </div>
+      
+      <div style={{ flexShrink: 0, padding: '12px 16px', background: 'var(--bg-nav)', borderTop: '1px solid var(--border)', boxShadow: '0 -4px 20px rgba(0,0,0,0.3)', paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)' }}>
+        <ActionPad 
+          onWicket={() => setShowWicketModal(true)} 
+          onEndInnings={() => {
+            if (window.confirm('Are you sure you want to end the innings now?')) {
+              endInnings();
+            }
+          }}
+          disabled={showBatterSelectForced || showBowlerSelectForced || match.complete} 
+        />
+      </div>
+
+      {/* Celebration Overlay */}
+      {celebrationsEnabled && <CelebrationOverlay />}
+
+      {/* Modals */}
+      {showWicketModal && (
+        <WicketModal onClose={() => setShowWicketModal(false)} />
+      )}
+      
+      {(showBatterSelect || showBatterSelectForced) && (
+        <BatterSelectModal onClose={() => dismissBatterSelect()} />
+      )}
+      
+      {(showBowlerSelect || showBowlerSelectForced) && !showBatterSelectForced && !showWicketModal && (
+        <BowlerSelectModal onClose={() => dismissBowlerSelect()} />
+      )}
+      
+      {showOverSummary && !showWicketModal && (
+        <OverSummaryModal onClose={() => dismissOverSummary()} />
+      )}
+      
+      {showDLS && (
+        <DLSModal onClose={() => setShowDLS(false)} />
+      )}
+      
+      {match.complete && (
+        <ResultModal 
+          onClose={() => {}} 
+          onViewScorecard={() => setShowScorecard(true)} 
+        />
+      )}
+
+      {showScorecard && (
+        <ScorecardModal onClose={() => setShowScorecard(false)} />
+      )}
+
+      {/* Floating Action Button for Scorecard (only if not complete) */}
+      {!match.complete && (
+        <button 
+          onClick={() => setShowScorecard(true)}
+          style={{
+            position: 'fixed',
+            bottom: '80px',
+            right: '20px',
+            width: '48px',
+            height: '48px',
+            borderRadius: '24px',
+            background: 'var(--panel-solid)',
+            border: '1px solid var(--border)',
+            color: 'var(--gold)',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            zIndex: 90,
+          }}
+          aria-label="View Full Scorecard"
+        >
+          📊
+        </button>
+      )}
+    </div>
+  );
+}

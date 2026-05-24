@@ -1,0 +1,382 @@
+/* ═══════════════════════════════════════════════════════
+   BACKYARD CRICKET SCORER — CYBER-ATHLETIC GLASSMORPHISM
+   ═══════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+/* ——— THEME: NEON DARK (Cyber-Athletic) ——— */
+:root,
+[data-theme="dark-green"],
+[data-theme="dark-navy"],
+[data-theme="dark"] {
+  --bg-body: #0B0E14; /* Midnight Space */
+  --bg-nav: rgba(11, 14, 20, 0.7);
+  --bg-input: rgba(255, 255, 255, 0.03);
+  --bg-card: rgba(255, 255, 255, 0.04);
+  --bg-scoreboard: rgba(11, 14, 20, 0.6);
+  --bg-modal: #11151F;
+  --bg-backdrop: rgba(0, 0, 0, 0.75);
+
+  --panel-solid: #161B26;
+  --panel: rgba(255, 255, 255, 0.06);
+  --panel-hover: rgba(255, 255, 255, 0.12);
+  
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.2);
+  --border-glow: rgba(0, 242, 254, 0.3);
+
+  --text-primary: #FFFFFF;
+  --text-secondary: rgba(255, 255, 255, 0.65);
+  --text-muted: rgba(255, 255, 255, 0.4);
+  --text-faint: rgba(255, 255, 255, 0.15);
+
+  /* Cyber Accents */
+  --gold: #00F2FE; /* Replacing gold with Neon Cyan for primary actions */
+  --gold-light: #4FACFE; 
+  --leather: #FE0979; /* Replacing leather with Vivid Magenta for danger/wickets */
+  --leather-light: #FF7A00;
+  
+  --cyan: #00F2FE;
+  --magenta: #FE0979;
+  --green: #00FF87; /* Neon Green */
+  --purple: #B224EF;
+  --chalk: #F0F4F8;
+  --ink: #0B0E14;
+
+  --radius: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 9999px;
+
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Outfit', sans-serif;
+  --font-mono: 'Space Grotesk', monospace;
+
+  --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-spring: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --shadow-glow: 0 4px 24px rgba(0, 242, 254, 0.25);
+  --shadow-danger: 0 4px 24px rgba(254, 9, 121, 0.35);
+  --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* ——— THEME: SLEEK LIGHT ——— */
+[data-theme="light"] {
+  --bg-body: #F4F7FB;
+  --bg-nav: rgba(255, 255, 255, 0.85);
+  --bg-input: #FFFFFF;
+  --bg-card: rgba(255, 255, 255, 0.6);
+  --bg-scoreboard: rgba(255, 255, 255, 0.8);
+  --bg-modal: #FFFFFF;
+  --bg-backdrop: rgba(11, 14, 20, 0.5);
+
+  --panel-solid: #FFFFFF;
+  --panel: rgba(255, 255, 255, 0.8);
+  --panel-hover: #F0F4F8;
+  
+  --border: rgba(11, 14, 20, 0.08);
+  --border-hover: rgba(11, 14, 20, 0.15);
+  --border-glow: rgba(0, 114, 255, 0.2);
+
+  --text-primary: #11151F;
+  --text-secondary: rgba(11, 14, 20, 0.65);
+  --text-muted: rgba(11, 14, 20, 0.45);
+  --text-faint: rgba(11, 14, 20, 0.2);
+
+  --gold: #0072FF;
+  --gold-light: #00C6FF;
+  --leather: #FF0844;
+  --leather-light: #FFB199;
+  
+  --green: #00C652;
+  --chalk: #11151F;
+  --ink: #FFFFFF;
+}
+
+/* ——— HIGH CONTRAST (Accessibility) ——— */
+[data-theme="high-contrast"] {
+  --bg-body: #000000;
+  --bg-nav: #000000;
+  --bg-input: #000000;
+  --bg-card: #000000;
+  --bg-scoreboard: #000000;
+  --bg-modal: #000000;
+  --border: #FFFFFF;
+  --text-primary: #FFFFFF;
+  --text-secondary: #FFFFFF;
+  --gold: #00FFFF;
+  --leather: #FF00FF;
+}
+
+/* ——— FONT SIZE ——— */
+[data-fontsize="small"] { font-size: 14px; }
+[data-fontsize="medium"] { font-size: 16px; }
+[data-fontsize="large"] { font-size: 18px; }
+
+/* ——— RESET & BASE ——— */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-body);
+  color: var(--text-primary);
+  min-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Lock the body to prevent bouncy scrolling */
+  overscroll-behavior-y: none; /* Disable pull-to-refresh */
+  -webkit-tap-highlight-color: transparent; /* Remove blue tap highlight */
+  user-select: none; /* Disable text selection for app feel */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Allow text selection only in inputs */
+input, textarea {
+  user-select: auto;
+}
+
+/* Dynamic Gradient Background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 15% 10%, rgba(0, 242, 254, 0.12), transparent 45%),
+    radial-gradient(circle at 85% 90%, rgba(254, 9, 121, 0.12), transparent 45%),
+    linear-gradient(180deg, var(--bg-body) 0%, #080A0F 100%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+[data-theme="light"] body::before {
+  background: 
+    radial-gradient(circle at 15% 10%, rgba(0, 198, 255, 0.1), transparent 45%),
+    radial-gradient(circle at 85% 90%, rgba(255, 8, 68, 0.1), transparent 45%),
+    linear-gradient(180deg, var(--bg-body) 0%, #E8EEF5 100%);
+}
+
+/* ——— SCROLLBAR ——— */
+::-webkit-scrollbar { 
+  display: none; /* Hide scrollbars for native app feel */
+}
+
+/* ——— FOCUS ——— */
+*:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* ——— SELECTION ——— */
+::selection {
+  background: rgba(0, 242, 254, 0.3);
+  color: var(--text-primary);
+}
+
+/* ——— GLOBAL UTILITIES ——— */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+}
+
+.view-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  max-width: 680px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.glass-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-card);
+  transition: border-color var(--transition-normal);
+}
+
+.glass-card:hover {
+  border-color: var(--border-glow);
+}
+
+.card-title {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.field input,
+.field select,
+.field textarea {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  outline: none;
+  transition: all var(--transition-normal);
+  width: 100%;
+  resize: vertical;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(0, 242, 254, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: var(--text-faint);
+  font-weight: 400;
+}
+
+.field select option {
+  background: var(--panel-solid);
+  color: var(--text-primary);
+}
+
+/* Primary Button (Gradient) */
+.btn-primary {
+  width: 100%;
+  padding: 18px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 1.5px;
+  border: none;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  margin-top: 12px;
+  box-shadow: var(--shadow-glow);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(255,255,255,0.2), transparent);
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 242, 254, 0.4);
+}
+
+.btn-primary:hover::after {
+  opacity: 1;
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+}
+
+.btn-primary:disabled {
+  background: var(--panel);
+  color: var(--text-muted);
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+  border: 1px solid var(--border);
+}
+
+/* Secondary Button (Glass Outline) */
+.btn-secondary {
+  width: 100%;
+  padding: 14px;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-secondary:hover {
+  background: var(--panel-hover);
+  border-color: var(--border-hover);
+}
+
+/* ——— ARIA / UTIL ——— */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media print {
+  body::before { display: none; }
+  .nav, .scoring-section, .action-btns, .end-innings-btn { display: none !important; }
+}
+
+@media (max-width: 480px) {
+  .view-container { padding: 16px; }
+  .glass-card { padding: 20px; }
+}

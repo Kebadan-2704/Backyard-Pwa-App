@@ -1,0 +1,36 @@
+.live-share-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin-left: 12px;
+}
+
+.live-share-toggle:hover {
+  background: var(--panel-hover);
+  color: var(--chalk);
+  border-color: var(--gold);
+}
+
+.firebase-warning {
+  background: rgba(192, 57, 43, 0.1);
+  border: 1px solid rgba(192, 57, 43, 0.3);
+  padding: 16px;
+  border-radius: 12px;
+  color: var(--text-secondary);
+}
+
+.firebase-warning code {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--leather-light);
+  font-family: var(--font-mono);
+}
