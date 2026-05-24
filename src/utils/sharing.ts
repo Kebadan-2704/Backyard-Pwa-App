@@ -4,6 +4,7 @@
 
 import type { Match, Innings } from '../types/cricket';
 import { getOversString, getTotalExtras, getExtrasBreakdown } from './scoring';
+import html2canvas from 'html2canvas';
 
 function formatInningsLine(teamName: string, inn: Innings): string {
   return `${teamName}: ${inn.runs}/${inn.wickets} (${getOversString(inn.deliveries)})`;
@@ -83,9 +84,51 @@ export async function shareViaWebShare(m: Match): Promise<boolean> {
   return shareViaClipboard(m);
 }
 
-/** Capture screenshot (Placeholder for now) */
-export function captureScreenshot(elementId: string, m: Match): void {
-  console.log('Screenshot capture not implemented yet.', elementId, m);
+/** Capture screenshot */
+export async function captureScreenshot(elementId: string, m: Match): Promise<void> {
+  const element = document.getElementById(elementId);
+  if (!element) {
+    console.error(`Element with id ${elementId} not found.`);
+    return;
+  }
+  
+  try {
+    const canvas = await html2canvas(element, { 
+      backgroundColor: '#0a0a0a',
+      scale: 2, // Better resolution
+      useCORS: true 
+    });
+    const dataUrl = canvas.toDataURL('image/png');
+    
+    // Check if Web Share API supports files
+    if (navigator.share) {
+      try {
+        const response = await fetch(dataUrl);
+        const blob = await response.blob();
+        const file = new File([blob], `${m.teams[0]}_vs_${m.teams[1]}_scorecard.png`, { type: 'image/png' });
+        
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: 'Cricket Scorecard',
+            text: buildShareText(m)
+          });
+          return;
+        }
+      } catch (err) {
+        console.warn('Web Share API failed or unsupported, falling back to download', err);
+      }
+    }
+    
+    // Fallback: Download image
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = `${m.teams[0]}_vs_${m.teams[1]}_scorecard.png`;
+    a.click();
+  } catch (err) {
+    console.error('Failed to capture screenshot', err);
+    alert('Failed to generate scorecard image.');
+  }
 }
 
 /** Export matches as JSON file download */

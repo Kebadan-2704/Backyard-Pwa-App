@@ -35,6 +35,10 @@ interface AppState {
   installDismissed: boolean;
   dismissInstall: () => void;
   
+  // Auth
+  firebaseUser: { uid: string; displayName: string | null; photoURL: string | null } | null;
+  setFirebaseUser: (user: any) => void;
+  
   // Reset
   factoryResetApp: () => void;
 }
@@ -48,6 +52,15 @@ export const useAppStore = create<AppState>()(
         set((state) => ({
           settings: { ...state.settings, ...partial },
         })),
+
+      firebaseUser: null,
+      setFirebaseUser: (user) => {
+        if (!user) {
+          set({ firebaseUser: null });
+        } else {
+          set({ firebaseUser: { uid: user.uid, displayName: user.displayName, photoURL: user.photoURL } });
+        }
+      },
 
       toasts: [],
       addToast: (text, type = 'info', duration = 2500) => {

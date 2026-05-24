@@ -153,6 +153,38 @@ function finalizeBowlerOver(inn: Innings, bowlerName: string): void {
   bw.economy = bw.overs > 0 ? bw.runsConceded / bw.overs : 0;
 }
 
+function calculateManOfTheMatch(m: Match): string {
+  const scores: Record<string, number> = {};
+
+  m.innings.forEach(inn => {
+    // Batting points
+    Object.entries(inn.batters).forEach(([name, b]) => {
+      if (!scores[name]) scores[name] = 0;
+      scores[name] += b.runs * 1;
+      scores[name] += b.fours * 2;
+      scores[name] += b.sixes * 2;
+    });
+    // Bowling points
+    Object.entries(inn.bowlers).forEach(([name, b]) => {
+      if (!scores[name]) scores[name] = 0;
+      scores[name] += b.wickets * 20;
+      scores[name] += b.maidens * 10;
+      scores[name] -= b.runsConceded * 0.5;
+    });
+  });
+
+  let bestPlayer = '';
+  let maxScore = -Infinity;
+  Object.entries(scores).forEach(([name, score]) => {
+    if (score > maxScore) {
+      maxScore = score;
+      bestPlayer = name;
+    }
+  });
+
+  return bestPlayer;
+}
+
 function checkAndEndInnings(
   m: Match,
   inn: Innings,
@@ -176,6 +208,8 @@ function checkAndEndInnings(
       m.winner = m.teams[1];
       m.margin = `by ${wktsLeft} wicket${wktsLeft !== 1 ? 's' : ''}`;
       
+      m.manOfTheMatch = calculateManOfTheMatch(m);
+
       // Ingest into global stats
       useStatsStore.getState().ingestMatch(m);
 
@@ -673,9 +707,10 @@ export const useMatchStore = create<MatchState>()(
           timestamp: Date.now(),
           swappedBatters: false,
           wasEndOfOver: false,
-          fielder: config.fielder,
-          isTeamWicket: config.isTeamWicket,
         };
+
+        if (config.fielder) delivery.fielder = config.fielder;
+        if (config.isTeamWicket !== undefined) delivery.isTeamWicket = config.isTeamWicket;
 
         inn.deliveries.push(delivery);
         inn.runs += config.runsBeforeWicket;
@@ -1067,6 +1102,8 @@ export const useMatchStore = create<MatchState>()(
           }
           m.complete = true;
           
+          m.manOfTheMatch = calculateManOfTheMatch(m);
+
           // Ingest into global stats
           useStatsStore.getState().ingestMatch(m);
 

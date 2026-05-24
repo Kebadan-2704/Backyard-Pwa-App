@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useAppStore } from './store/appStore';
 import { useKeyboard } from './hooks/useKeyboard';
@@ -7,7 +7,8 @@ import ToastContainer from './components/Toast';
 import PWABadge from './components/PWABadge';
 import SplashScreen from './components/SplashScreen';
 import { useMatchStore } from './store/matchStore';
-import { syncLiveMatch } from './lib/firebase';
+import { syncLiveMatch, auth } from './lib/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 
 // Subscribe to store changes to sync with Firebase
 useMatchStore.subscribe((state) => {
@@ -27,6 +28,40 @@ import DraftPage from './pages/DraftPage';
 import BroadcastPage from './pages/BroadcastPage';
 import ArchivesPage from './pages/ArchivesPage';
 import TournamentDashboard from './pages/TournamentDashboard';
+
+import LoginPage from './pages/LoginPage';
+
+// Simple Auth Wrapper
+function AuthWrapper({ children }: { children: React.ReactNode }) {
+  const firebaseUser = useAppStore((s) => s.firebaseUser);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!auth) {
+      setLoading(false);
+      return;
+    }
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      useAppStore.getState().setFirebaseUser(user);
+      if (user) {
+        import('./store/historyStore').then(({ useHistoryStore }) => {
+          const store = useHistoryStore.getState();
+          store.syncToFirestore(user.uid); // Upload any local matches
+          store.loadFromFirestore(user.uid); // Download cloud matches
+        });
+      }
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  if (loading) {
+    return <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--chalk)' }}>Authenticating...</div>;
+  }
+
+  if (!firebaseUser) return <LoginPage />;
+  return <>{children}</>;
+}
 
 export default function App() {
   const theme = useAppStore((s) => s.settings.theme);
@@ -77,8 +112,10 @@ export default function App() {
       </header>
       <main className="scroll-area">
         <Routes>
-          <Route path="/" element={<SetupPage />} />
-          <Route path="/scorer" element={<ScorerPage />} />
+          <Route path="/" element={<AuthWrapper><SetupPage /></AuthWrapper>} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/setup" element={<AuthWrapper><SetupPage /></AuthWrapper>} />
+          <Route path="/scorer" element={<AuthWrapper><ScorerPage /></AuthWrapper>} />
           <Route path="/draft" element={<DraftPage />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/settings" element={<SettingsPage />} />

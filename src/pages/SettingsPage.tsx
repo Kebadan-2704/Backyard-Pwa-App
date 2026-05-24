@@ -219,11 +219,51 @@ export default function SettingsPage() {
         <div style={{ padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius)', marginTop: 12, border: '1px solid var(--border)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
             <div style={{ fontWeight: 600 }}>Cloud Sync</div>
-            <div style={{ fontSize: 10, background: 'rgba(231, 76, 60, 0.15)', color: 'var(--red)', padding: '2px 6px', borderRadius: 10 }}>NOT CONFIGURED</div>
+            {useAppStore.getState().firebaseUser ? (
+              <div style={{ fontSize: 10, background: 'rgba(46, 204, 113, 0.15)', color: 'var(--green)', padding: '2px 6px', borderRadius: 10 }}>CONNECTED</div>
+            ) : (
+              <div style={{ fontSize: 10, background: 'rgba(231, 76, 60, 0.15)', color: 'var(--red)', padding: '2px 6px', borderRadius: 10 }}>NOT CONNECTED</div>
+            )}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-            To enable automatic cloud sync and Google Sign-in, you must add your Firebase configuration keys to <code>src/lib/firebase.ts</code>.
-          </div>
+          
+          {useAppStore.getState().firebaseUser ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                {useAppStore.getState().firebaseUser?.photoURL ? (
+                  <img src={useAppStore.getState().firebaseUser?.photoURL!} alt="Profile" style={{ width: 32, height: 32, borderRadius: '50%' }} />
+                ) : (
+                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000', fontWeight: 'bold' }}>
+                    {useAppStore.getState().firebaseUser?.displayName?.[0] || 'U'}
+                  </div>
+                )}
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 'bold' }}>{useAppStore.getState().firebaseUser?.displayName}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Synced to Cloud</div>
+                </div>
+              </div>
+              <button 
+                className="btn-secondary" 
+                style={{ padding: '6px 12px', fontSize: 12 }}
+                onClick={async () => {
+                  if (window.confirm('Are you sure you want to sign out? Local data will remain on device.')) {
+                    const { auth } = await import('../lib/firebase');
+                    const { signOut } = await import('firebase/auth');
+                    if (auth) {
+                      await signOut(auth);
+                      useAppStore.getState().setFirebaseUser(null);
+                      navigate('/login');
+                    }
+                  }
+                }}
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+              To enable automatic cloud sync and Google Sign-in, log in via the Welcome screen.
+            </div>
+          )}
         </div>
 
         <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>

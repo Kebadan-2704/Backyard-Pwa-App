@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMatchStore } from '../../store/matchStore';
 import { useHistoryStore } from '../../store/historyStore';
@@ -16,8 +17,12 @@ export default function ResultModal({ onClose, onViewScorecard }: Props) {
   const newMatch = useMatchStore((s) => s.newMatch);
   const saveMatch = useHistoryStore((s) => s.saveMatch);
   const startSuperOver = useMatchStore((s) => s.startSuperOver);
-  
+  const setManOfTheMatch = useMatchStore((s) => s.setManOfTheMatch);
+  const [isEditingMoM, setIsEditingMoM] = useState(false);
+
   if (!match || !match.complete) return null;
+
+  const allMatchPlayers = [...match.players[0], ...match.players[1]];
 
   function handleSaveAndExit() {
     if (match) saveMatch(match);
@@ -35,7 +40,7 @@ export default function ResultModal({ onClose, onViewScorecard }: Props) {
     if (!match) return;
     if (type === 'web') shareViaWebShare(match);
     else if (type === 'whatsapp') shareViaWhatsApp(match);
-    else if (type === 'image') captureScreenshot('scorecard-modal', match); // Needs a scorecard DOM element or we capture the result modal
+    else if (type === 'image') captureScreenshot('result-modal-content', match);
   }
 
   const isTie = match.winner === 'Match tied';
@@ -43,7 +48,7 @@ export default function ResultModal({ onClose, onViewScorecard }: Props) {
 
   return (
     <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="modal-content result-modal" style={{ textAlign: 'center' }}>
+      <div id="result-modal-content" className="modal-content result-modal" style={{ textAlign: 'center', background: 'var(--bg-card)' }}>
         <Trophy size={56} color="var(--gold)" style={{ margin: '0 auto 16px', filter: 'drop-shadow(0 0 10px rgba(240,165,0,0.5))' }} />
         
         <h2 style={{ fontSize: 32, marginBottom: 8, letterSpacing: 2 }}>MATCH OVER</h2>
@@ -62,11 +67,35 @@ export default function ResultModal({ onClose, onViewScorecard }: Props) {
 
         {/* Man of the Match display */}
         {match.manOfTheMatch && (
-          <div className="motm-badge" style={{ marginBottom: 24 }}>
-            <span style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1 }}>Player of the Match</span>
-            <div style={{ fontSize: 18, color: 'var(--chalk)', fontWeight: 700, marginTop: 4 }}>
-              ⭐ {match.manOfTheMatch}
+          <div className="motm-badge" style={{ marginBottom: 24, background: 'rgba(255, 255, 255, 0.03)', padding: 16, borderRadius: 12, border: '1px solid var(--border)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1 }}>Player of the Match</span>
+              <button 
+                onClick={() => setIsEditingMoM(!isEditingMoM)}
+                style={{ fontSize: 11, color: 'var(--blue)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+              >
+                {isEditingMoM ? 'Done' : 'Change'}
+              </button>
             </div>
+            
+            {isEditingMoM ? (
+              <select 
+                value={match.manOfTheMatch} 
+                onChange={(e) => {
+                  setManOfTheMatch(e.target.value);
+                  setIsEditingMoM(false);
+                }}
+                style={{ width: '100%', marginTop: 8, padding: 8, borderRadius: 6, background: 'var(--bg-input)', color: 'var(--chalk)', border: '1px solid var(--border)' }}
+              >
+                {allMatchPlayers.map(p => (
+                  <option key={p} value={p}>{p}</option>
+                ))}
+              </select>
+            ) : (
+              <div style={{ fontSize: 18, color: 'var(--chalk)', fontWeight: 700, marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                ⭐ {match.manOfTheMatch}
+              </div>
+            )}
           </div>
         )}
 
@@ -85,13 +114,13 @@ export default function ResultModal({ onClose, onViewScorecard }: Props) {
           >
             <MessageCircle size={16} /> WhatsApp
           </button>
-          {/* <button 
+          <button 
             className="btn-secondary" 
             style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px' }}
             onClick={() => handleShare('image')}
           >
-            <Copy size={16} /> Copy as Image
-          </button> */}
+            <Copy size={16} /> Share Image
+          </button>
         </div>
 
         <div className="modal-actions" style={{ flexDirection: 'column', gap: 10 }}>

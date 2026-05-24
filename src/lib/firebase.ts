@@ -1,5 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, set, onValue, off, get } from 'firebase/database';
+import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
 import type { Match } from '../types/cricket';
 
 // TODO: Replace with actual Firebase config from console
@@ -18,6 +20,16 @@ const isConfigured = firebaseConfig.apiKey !== "YOUR_API_KEY";
 
 const app = isConfigured ? initializeApp(firebaseConfig) : null;
 export const db = app ? getDatabase(app) : null;
+export const auth = app ? getAuth(app) : null;
+export const firestore = app ? getFirestore(app) : null;
+export const googleProvider = new GoogleAuthProvider();
+
+// Enable offline persistence for Firestore
+if (firestore) {
+  enableIndexedDbPersistence(firestore).catch((err) => {
+    console.warn("Firestore persistence failed:", err.code);
+  });
+}
 
 /**
  * Pushes the live match state to Firebase Realtime Database
@@ -25,7 +37,9 @@ export const db = app ? getDatabase(app) : null;
 export function syncLiveMatch(matchId: string, matchData: Match) {
   if (!db) return;
   const matchRef = ref(db, `live_matches/${matchId}`);
-  set(matchRef, matchData).catch(err => console.error("Firebase sync error:", err));
+  // Strip any undefined values to prevent Firebase crash loops
+  const safeData = JSON.parse(JSON.stringify(matchData));
+  set(matchRef, safeData).catch(err => console.error("Firebase sync error:", err));
 }
 
 /**

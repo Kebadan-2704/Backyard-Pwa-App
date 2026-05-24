@@ -46,6 +46,7 @@ export interface AppSettings {
   soundTheme: SoundTheme;
   showCommentary: boolean;
   landscapePrompted: boolean;
+  scorerName: string;
 }
 
 export const DEFAULT_APP_SETTINGS: AppSettings = {
@@ -60,4 +61,5 @@ export const DEFAULT_APP_SETTINGS: AppSettings = {
   soundTheme: 'stadium',
   showCommentary: true,
   landscapePrompted: false,
+  scorerName: '',
 };

@@ -1,147 +1,99 @@
-import { useState } from 'react';
-import { Trophy, Users, BarChart3, Medal, Play } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Search, Trophy, Medal, Users, User, Play } from 'lucide-react';
 import { useStatsStore } from '../store/statsStore';
 import { useNavigate } from 'react-router-dom';
+import PlayerProfileModal from '../components/modals/PlayerProfileModal';
+import type { PlayerProfile } from '../types/cricket';
 
 export default function StatsPage() {
   const navigate = useNavigate();
-  const { players, tournaments, activeTournamentId, createTournament, setActiveTournament } = useStatsStore();
-  const [activeTab, setActiveTab] = useState<'tournament' | 'career'>('tournament');
-  const [newTourneyName, setNewTourneyName] = useState('');
-  const [newTourneyTeams, setNewTourneyTeams] = useState('INDIA, AUSTRALIA, ENGLAND');
+  const { players } = useStatsStore();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedPlayer, setSelectedPlayer] = useState<PlayerProfile | null>(null);
 
-  const activeTournament = activeTournamentId ? tournaments[activeTournamentId] : null;
-
-  const handleCreateTournament = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newTourneyName.trim() || !newTourneyTeams.trim()) return;
-    const teamsList = newTourneyTeams.split(',').map(t => t.trim().toUpperCase()).filter(t => t);
-    if (teamsList.length < 2) return alert('Need at least 2 teams');
-    createTournament(newTourneyName, teamsList);
-    setNewTourneyName('');
-  };
-
-  // 1. Points Table Sorting
-  const sortedTeams = activeTournament 
-    ? Object.values(activeTournament.teams).sort((a, b) => {
-        if (b.points !== a.points) return b.points - a.points;
-        return b.netRunRate - a.netRunRate;
-      })
-    : [];
-
-  // 2. Career Leaderboards
   const allPlayers = Object.values(players);
+  
+  // Memoize search results
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const query = searchQuery.toLowerCase();
+    return allPlayers.filter(p => p.name.toLowerCase().includes(query));
+  }, [searchQuery, allPlayers]);
+
   const topBatters = [...allPlayers].sort((a, b) => b.batting.runs - a.batting.runs).slice(0, 5);
   const topBowlers = [...allPlayers].sort((a, b) => b.bowling.wickets - a.bowling.wickets).slice(0, 5);
 
   return (
     <div className="view-container">
-      {/* Sub Tabs */}
-      <div style={{ display: 'flex', background: 'var(--bg-input)', borderRadius: 'var(--radius)', padding: 4, marginBottom: 24 }}>
-        <button 
-          style={{ flex: 1, padding: '10px', background: activeTab === 'tournament' ? 'var(--panel-solid)' : 'transparent', color: activeTab === 'tournament' ? 'var(--text-primary)' : 'var(--text-secondary)', border: 'none', borderRadius: 'var(--radius-sm)', fontWeight: 600, transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
-          onClick={() => setActiveTab('tournament')}
-        >
-          <Trophy size={16} /> Tournament
-        </button>
-        <button 
-          style={{ flex: 1, padding: '10px', background: activeTab === 'career' ? 'var(--panel-solid)' : 'transparent', color: activeTab === 'career' ? 'var(--text-primary)' : 'var(--text-secondary)', border: 'none', borderRadius: 'var(--radius-sm)', fontWeight: 600, transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
-          onClick={() => setActiveTab('career')}
-        >
-          <BarChart3 size={16} /> Career Stats
-        </button>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+        <Trophy size={28} color="var(--gold)" />
+        <h1 style={{ margin: 0, fontSize: 24, color: 'var(--chalk)' }}>Player Stats</h1>
       </div>
 
-      {activeTab === 'tournament' && (
+      <div className="glass-card" style={{ padding: 12, marginBottom: 24, display: 'flex', gap: 12, alignItems: 'center' }}>
+        <Search size={20} color="var(--text-secondary)" />
+        <input 
+          type="search"
+          placeholder="Search player name..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          style={{ flex: 1, background: 'transparent', border: 'none', color: 'var(--chalk)', fontSize: 16, outline: 'none' }}
+        />
+      </div>
+
+      {searchQuery.trim() ? (
         <div className="animate-fade-in">
-          {!activeTournament ? (
-            <div className="glass-card">
-              <h2 style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--gold)', marginBottom: 16 }}>
-                <Medal size={20} /> Create Tournament
-              </h2>
-              <form onSubmit={handleCreateTournament} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <div className="field">
-                  <label>Tournament Name</label>
-                  <input type="text" placeholder="e.g. Backyard Premier League" value={newTourneyName} onChange={(e) => setNewTourneyName(e.target.value)} />
-                </div>
-                <div className="field">
-                  <label>Teams (comma separated)</label>
-                  <textarea placeholder="INDIA, AUSTRALIA, ENGLAND" value={newTourneyTeams} onChange={(e) => setNewTourneyTeams(e.target.value)} rows={3} />
-                </div>
-                <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: 8 }}>CREATE TOURNAMENT</button>
-              </form>
+          <h3 style={{ margin: '0 0 16px 0', fontSize: 14, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
+            Search Results ({searchResults.length})
+          </h3>
+          {searchResults.length === 0 ? (
+            <div className="glass-card" style={{ textAlign: 'center', padding: 40, color: 'var(--text-muted)' }}>
+              <User size={32} style={{ marginBottom: 12, opacity: 0.5 }} />
+              <p>No players found matching "{searchQuery}"</p>
             </div>
           ) : (
-            <>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <div>
-                  <h2 style={{ margin: 0, color: 'var(--gold)' }}>{activeTournament.name}</h2>
-                  <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 }}>
-                    {activeTournament.matchIds.length} Matches Played
-                  </div>
-                </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {searchResults.map(p => (
                 <button 
-                  onClick={() => setActiveTournament(null)}
-                  style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-secondary)', padding: '6px 12px', borderRadius: 'var(--radius-sm)', fontSize: 12 }}
+                  key={p.name}
+                  className="glass-card"
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 16, cursor: 'pointer', textAlign: 'left', transition: 'transform 0.2s' }}
+                  onClick={() => setSelectedPlayer(p)}
                 >
-                  Change
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                    <div style={{ width: 40, height: 40, borderRadius: 20, background: 'var(--panel-solid)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, color: 'var(--gold)' }}>
+                      {p.name.substring(0, 2).toUpperCase()}
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 600, fontSize: 16, color: 'var(--chalk)' }}>{p.name}</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{p.batting.matches} Matches Played</div>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: 16, textAlign: 'center' }}>
+                    <div>
+                      <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>RUNS</div>
+                      <div style={{ fontWeight: 700, color: 'var(--gold)' }}>{p.batting.runs}</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>WKTS</div>
+                      <div style={{ fontWeight: 700, color: 'var(--magenta)' }}>{p.bowling.wickets}</div>
+                    </div>
+                  </div>
                 </button>
-              </div>
-
-              <div className="glass-card" style={{ padding: '0', overflow: 'hidden', marginBottom: 24 }}>
-                <div style={{ padding: '16px', borderBottom: '1px solid var(--border)', background: 'rgba(255,255,255,0.03)' }}>
-                  <h3 style={{ margin: 0, fontSize: 16, display: 'flex', alignItems: 'center', gap: 8 }}><Trophy size={16} /> Points Table</h3>
-                </div>
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
-                    <thead>
-                      <tr style={{ background: 'rgba(255,255,255,0.02)', color: 'var(--text-secondary)', textAlign: 'left', borderBottom: '1px solid var(--border)' }}>
-                        <th style={{ padding: '12px 16px', fontWeight: 600 }}>Team</th>
-                        <th style={{ padding: '12px', fontWeight: 600 }}>P</th>
-                        <th style={{ padding: '12px', fontWeight: 600 }}>W</th>
-                        <th style={{ padding: '12px', fontWeight: 600 }}>L</th>
-                        <th style={{ padding: '12px', fontWeight: 600, color: 'var(--gold)' }}>Pts</th>
-                        <th style={{ padding: '12px 16px', fontWeight: 600, textAlign: 'right' }}>NRR</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {sortedTeams.map((team, idx) => (
-                        <tr key={team.teamName} style={{ borderBottom: '1px solid var(--border)' }}>
-                          <td style={{ padding: '12px 16px', fontWeight: 600, color: idx === 0 ? 'var(--gold)' : 'var(--text-primary)' }}>
-                            {team.teamName}
-                          </td>
-                          <td style={{ padding: '12px', color: 'var(--text-secondary)' }}>{team.played}</td>
-                          <td style={{ padding: '12px', color: 'var(--green)' }}>{team.won}</td>
-                          <td style={{ padding: '12px', color: 'var(--red)' }}>{team.lost}</td>
-                          <td style={{ padding: '12px', fontWeight: 700, color: 'var(--gold)' }}>{team.points}</td>
-                          <td style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'var(--font-display)' }}>
-                            {team.netRunRate > 0 ? '+' : ''}{team.netRunRate.toFixed(3)}
-                          </td>
-                        </tr>
-                      ))}
-                      {sortedTeams.length === 0 && (
-                        <tr><td colSpan={6} style={{ padding: 24, textAlign: 'center', color: 'var(--text-muted)' }}>No teams</td></tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              <button className="btn-primary" style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: 8 }} onClick={() => navigate('/setup')}>
-                <Play size={18} /> PLAY TOURNAMENT MATCH
-              </button>
-            </>
+              ))}
+            </div>
           )}
         </div>
-      )}
-
-      {activeTab === 'career' && (
+      ) : (
         <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           {allPlayers.length === 0 ? (
             <div className="glass-card" style={{ textAlign: 'center', padding: 40, color: 'var(--text-muted)' }}>
               <Users size={32} style={{ marginBottom: 12, opacity: 0.5 }} />
               <p>No players recorded yet.</p>
               <p style={{ fontSize: 12 }}>Finish a match to generate player profiles.</p>
+              <button className="btn-primary" style={{ marginTop: 20, display: 'flex', justifyContent: 'center', gap: 8, width: '100%' }} onClick={() => navigate('/')}>
+                <Play size={18} /> PLAY MATCH
+              </button>
             </div>
           ) : (
             <>
@@ -153,18 +105,18 @@ export default function StatsPage() {
                   </h3>
                 </div>
                 {topBatters.map((p, idx) => (
-                  <div key={p.name} style={{ display: 'flex', justifyContent: 'space-between', padding: '16px', borderBottom: '1px solid var(--border)', alignItems: 'center' }}>
+                  <button key={p.name} onClick={() => setSelectedPlayer(p)} style={{ width: '100%', display: 'flex', justifyContent: 'space-between', padding: '16px', borderBottom: '1px solid var(--border)', alignItems: 'center', background: 'transparent', border: 'none', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--border)', textAlign: 'left', cursor: 'pointer' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                       <div style={{ width: 24, fontWeight: 700, color: 'var(--text-secondary)' }}>{idx + 1}</div>
                       <div>
-                        <div style={{ fontWeight: 600, fontSize: 16 }}>{p.name}</div>
+                        <div style={{ fontWeight: 600, fontSize: 16, color: 'var(--chalk)' }}>{p.name}</div>
                         <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
                           {p.batting.matches} M | Avg: {p.batting.innings > 0 ? (p.batting.runs / (p.batting.innings - p.batting.notOuts || 1)).toFixed(1) : 0} | SR: {p.batting.ballsFaced > 0 ? ((p.batting.runs / p.batting.ballsFaced) * 100).toFixed(0) : 0}
                         </div>
                         {(p.batting.hundreds > 0 || p.batting.fifties > 0) && (
                           <div style={{ display: 'flex', gap: 6, marginTop: 4, fontSize: 11 }}>
                             {p.batting.hundreds > 0 && <span style={{ background: 'rgba(255,160,0,0.15)', color: 'var(--gold)', padding: '2px 6px', borderRadius: 4 }}>💯 x{p.batting.hundreds}</span>}
-                            {p.batting.fifties > 0 && <span style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)', padding: '2px 6px', borderRadius: 4 }}>🎖️ x{p.batting.fifties}</span>}
+                            {p.batting.fifties > 0 && <span style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--chalk)', padding: '2px 6px', borderRadius: 4 }}>🎖️ x{p.batting.fifties}</span>}
                           </div>
                         )}
                       </div>
@@ -172,7 +124,7 @@ export default function StatsPage() {
                     <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: 'var(--gold)' }}>
                       {p.batting.runs}
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
 
@@ -184,11 +136,11 @@ export default function StatsPage() {
                   </h3>
                 </div>
                 {topBowlers.map((p, idx) => (
-                  <div key={p.name} style={{ display: 'flex', justifyContent: 'space-between', padding: '16px', borderBottom: '1px solid var(--border)', alignItems: 'center' }}>
+                  <button key={p.name} onClick={() => setSelectedPlayer(p)} style={{ width: '100%', display: 'flex', justifyContent: 'space-between', padding: '16px', borderBottom: '1px solid var(--border)', alignItems: 'center', background: 'transparent', border: 'none', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--border)', textAlign: 'left', cursor: 'pointer' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                       <div style={{ width: 24, fontWeight: 700, color: 'var(--text-secondary)' }}>{idx + 1}</div>
                       <div>
-                        <div style={{ fontWeight: 600, fontSize: 16 }}>{p.name}</div>
+                        <div style={{ fontWeight: 600, fontSize: 16, color: 'var(--chalk)' }}>{p.name}</div>
                         <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
                           {p.bowling.matches} M | Econ: {p.bowling.ballsBowled > 0 ? ((p.bowling.runsConceded / p.bowling.ballsBowled) * 6).toFixed(1) : 0} | Best: {p.bowling.bestBowling.wickets}/{p.bowling.bestBowling.runs}
                         </div>
@@ -202,13 +154,18 @@ export default function StatsPage() {
                     <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: 'var(--magenta)' }}>
                       {p.bowling.wickets}
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             </>
           )}
         </div>
       )}
+
+      {selectedPlayer && (
+        <PlayerProfileModal player={selectedPlayer} onClose={() => setSelectedPlayer(null)} />
+      )}
     </div>
   );
 }
+

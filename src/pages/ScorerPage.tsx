@@ -98,22 +98,32 @@ export default function ScorerPage() {
         </button>
 
         <div className="glass-card" style={{ maxWidth: 300, width: '100%', padding: '20px' }}>
-          <div className="card-title" style={{ fontSize: 14, marginBottom: 12 }}>TAKE OVER SCORING</div>
-          <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 12 }}>Enter a live match code to take over scoring duties from another device.</p>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <input 
-              placeholder="Match Code" 
-              value={importCode}
-              onChange={e => setImportCode(e.target.value)}
-              style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-input)', color: '#fff' }}
-            />
+          <div className="card-title" style={{ fontSize: 14, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <DownloadCloud size={18} /> JOIN MATCH
+          </div>
+          <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 16 }}>Enter a live match code to view the match or take over scoring duties.</p>
+          <input 
+            placeholder="Match Code" 
+            value={importCode}
+            onChange={e => setImportCode(e.target.value)}
+            style={{ width: '100%', padding: '12px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-input)', color: '#fff', marginBottom: 16, textAlign: 'center', fontSize: 16, letterSpacing: 1 }}
+          />
+          <div style={{ display: 'flex', gap: 8, flexDirection: 'column' }}>
+            <button 
+              className="btn-primary-small" 
+              onClick={() => navigate(`/live/${importCode.trim()}`)}
+              disabled={!importCode.trim()}
+              style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+            >
+              JOIN AS VIEWER
+            </button>
             <button 
               className="btn-secondary" 
               onClick={handleImport}
               disabled={isImporting || !importCode.trim()}
-              style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px' }}
             >
-              {isImporting ? '...' : <DownloadCloud size={18} />}
+              {isImporting ? 'SYNCING...' : 'TAKE OVER SCORING'}
             </button>
           </div>
         </div>
@@ -152,7 +162,11 @@ export default function ScorerPage() {
       )}
 
       <div className="scoreboard-container">
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, alignItems: 'center' }}>
+          <div style={{ fontSize: 11, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.05)', padding: '4px 8px', borderRadius: 6 }}>
+            <span style={{ color: 'var(--gold)', fontWeight: 600 }}>MATCH CODE:</span>
+            <span style={{ fontFamily: 'var(--font-mono)', letterSpacing: 1 }}>{match.id}</span>
+          </div>
           <button 
             onClick={() => setShowDLS(true)}
             style={{ 

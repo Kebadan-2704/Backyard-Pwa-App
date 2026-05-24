@@ -13,6 +13,8 @@ interface HistoryState {
   clearHistory: () => void;
   searchHistory: (query: string) => Match[];
   importMatches: (matches: Match[]) => void;
+  syncToFirestore: (uid: string) => Promise<void>;
+  loadFromFirestore: (uid: string) => Promise<void>;
   getStorageInfo: () => { used: number; limit: number; matchCount: number };
 }
 
@@ -25,6 +27,14 @@ export const useHistoryStore = create<HistoryState>()(
         set((state) => ({
           matches: [match, ...state.matches.filter(m => m.id !== match.id)].slice(0, 200),
         }));
+        
+        // Also sync to firestore if logged in
+        import('./appStore').then(({ useAppStore }) => {
+          const user = useAppStore.getState().firebaseUser;
+          if (user) {
+            get().syncToFirestore(user.uid);
+          }
+        });
       },
 
       deleteMatch: (id) => {
@@ -57,6 +67,46 @@ export const useHistoryStore = create<HistoryState>()(
           const newMatches = matches.filter((m) => !existingIds.has(m.id));
           return { matches: [...newMatches, ...state.matches].slice(0, 200) };
         });
+      },
+
+      syncToFirestore: async (uid: string) => {
+        const { firestore } = await import('../lib/firebase');
+        if (!firestore) return;
+        const { doc, setDoc } = await import('firebase/firestore');
+        
+        const state = get();
+        // Upload local matches to firestore
+        for (const match of state.matches) {
+          try {
+            await setDoc(doc(firestore, `users/${uid}/matches`, match.id.toString()), match, { merge: true });
+          } catch (e) {
+            console.error('Error syncing match to firestore:', e);
+          }
+        }
+      },
+
+      loadFromFirestore: async (uid: string) => {
+        const { firestore } = await import('../lib/firebase');
+        if (!firestore) return;
+        const { collection, getDocs } = await import('firebase/firestore');
+
+        try {
+          const snapshot = await getDocs(collection(firestore, `users/${uid}/matches`));
+          const cloudMatches: Match[] = [];
+          snapshot.forEach(doc => cloudMatches.push(doc.data() as Match));
+          
+          if (cloudMatches.length > 0) {
+            // Merge with local matches
+            get().importMatches(cloudMatches);
+            
+            // Recompute stats from combined history
+            import('./statsStore').then(({ useStatsStore }) => {
+              useStatsStore.getState().recomputeAllStats(get().matches);
+            });
+          }
+        } catch (e) {
+          console.error('Error loading history from firestore:', e);
+        }
       },
 
       getStorageInfo: () => {
