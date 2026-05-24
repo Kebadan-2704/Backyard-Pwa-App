@@ -52,10 +52,10 @@
   display: flex;
   width: 100%;
   max-width: 680px;
-  justify-content: flex-start;
+  justify-content: space-around;
   padding: 8px 12px;
-  gap: 8px;
-  overflow-x: auto;
+  gap: 4px;
+  overflow-x: hidden;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
 }
@@ -80,7 +80,7 @@
   text-decoration: none;
   position: relative;
   white-space: nowrap;
-  flex: 0 0 auto;
+  flex: 1;
   -webkit-tap-highlight-color: transparent;
 }
 
