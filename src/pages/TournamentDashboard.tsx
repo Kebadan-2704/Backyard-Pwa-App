@@ -91,7 +91,7 @@ export default function TournamentDashboard() {
         <h1 style={{ fontSize: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
           <Trophy size={22} color="var(--gold)" /> Tournaments
         </h1>
-        <button className="btn-primary-small" onClick={() => setShowCreate(!showCreate)} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <button className="btn-primary-small" onClick={() => setShowCreate(!showCreate)} style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 'none', padding: '8px 16px' }}>
           <Plus size={16} /> NEW
         </button>
       </div>
