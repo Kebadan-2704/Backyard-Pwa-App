@@ -306,7 +306,7 @@ export default function SetupPage() {
                       placeholder="Enter new player..."
                       style={{ flex: 1 }}
                     />
-                    <button className="btn-secondary" style={{ padding: '0 12px', flex: 'none' }} onClick={() => handleAddPlayer(1)}>
+                    <button className="btn-secondary" style={{ padding: '0 12px', flex: 'none', width: 'auto' }} onClick={() => handleAddPlayer(1)}>
                       <Plus size={16} />
                     </button>
                     <button className="btn-primary-small" style={{ fontSize: 11, padding: '0 12px', flex: 'none' }} onClick={() => setSelectModalTarget(1)}>
@@ -334,7 +334,7 @@ export default function SetupPage() {
                       placeholder="Enter new player..."
                       style={{ flex: 1 }}
                     />
-                    <button className="btn-secondary" style={{ padding: '0 12px', flex: 'none' }} onClick={() => handleAddPlayer(2)}>
+                    <button className="btn-secondary" style={{ padding: '0 12px', flex: 'none', width: 'auto' }} onClick={() => handleAddPlayer(2)}>
                       <Plus size={16} />
                     </button>
                     <button className="btn-primary-small" style={{ fontSize: 11, padding: '0 12px', flex: 'none' }} onClick={() => setSelectModalTarget(2)}>
@@ -363,7 +363,7 @@ export default function SetupPage() {
                       placeholder="Enter joker..."
                       style={{ flex: 1 }}
                     />
-                    <button className="btn-secondary" style={{ padding: '0 12px', flex: 'none' }} onClick={() => handleAddPlayer(3)}>
+                    <button className="btn-secondary" style={{ padding: '0 12px', flex: 'none', width: 'auto' }} onClick={() => handleAddPlayer(3)}>
                       <Plus size={16} />
                     </button>
                     <button className="btn-primary-small" style={{ fontSize: 11, padding: '0 12px', flex: 'none' }} onClick={() => setSelectModalTarget(3)}>
