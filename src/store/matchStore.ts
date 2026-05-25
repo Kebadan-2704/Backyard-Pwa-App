@@ -1099,11 +1099,14 @@ export const useMatchStore = create<MatchState>()(
 
       swapBatters: () => {
         const { match } = get();
-        if (!match) return;
+        if (!match || match.complete) return;
         const m = structuredClone(match);
         const inn = m.innings[m.currentInnings];
+        // Only swap if both batters are set
+        if (!inn.striker || !inn.nonStriker) return;
         [inn.striker, inn.nonStriker] = [inn.nonStriker, inn.striker];
         set({ match: m });
+        syncLiveMatch(m.id.toString(), m);
       },
 
       retireBatter: (type) => {

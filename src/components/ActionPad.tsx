@@ -1,20 +1,20 @@
+import { useState } from 'react';
 import { useMatchStore } from '../store/matchStore';
 import { useHaptic } from '../hooks/useHaptic';
 import { useSound } from '../hooks/useSound';
-import { RotateCcw, ArrowLeftRight, UserX, AlertCircle, Goal, Shield, Flag } from 'lucide-react';
+import { RotateCcw, ArrowLeftRight, UserX, AlertCircle, Goal, Flag, Plus } from 'lucide-react';
 import './ActionPad.css';
 
 interface Props {
   onWicket: () => void;
   onEndInnings?: () => void;
   onExtra: (type: 'wide' | 'noball' | 'bye' | 'legbye' | 'penalty') => void;
-  onBoundary: () => void;
+  onShotPlayed: () => void;
   disabled?: boolean;
 }
 
-export default function ActionPad({ onWicket, onEndInnings, onExtra, onBoundary, disabled = false }: Props) {
+export default function ActionPad({ onWicket, onEndInnings, onExtra, onShotPlayed, disabled = false }: Props) {
   const addRun = useMatchStore((s) => s.addRun);
-  const addExtra = useMatchStore((s) => s.addExtra);
   const undoLastBall = useMatchStore((s) => s.undoLastBall);
   const swapBatters = useMatchStore((s) => s.swapBatters);
   const retireBatter = useMatchStore((s) => s.retireBatter);
@@ -23,6 +23,8 @@ export default function ActionPad({ onWicket, onEndInnings, onExtra, onBoundary,
   const haptic = useHaptic();
   const sound = useSound();
 
+  const [showCustomRuns, setShowCustomRuns] = useState(false);
+
   function handleRun(r: number) {
     if (disabled) return;
     addRun(r);
@@ -30,13 +32,16 @@ export default function ActionPad({ onWicket, onEndInnings, onExtra, onBoundary,
       haptic.boundary();
       sound.playBoundary();
       sound.speakCommentary(r === 4 ? 'Four runs! Beautiful shot!' : 'Six! Out of the park!');
-      onBoundary();
     } else {
       haptic.tap();
       sound.playTap();
       if (r === 0) sound.speakCommentary('Dot ball.');
       else if (r === 1) sound.speakCommentary('Just a single.');
       else sound.speakCommentary(`${r} runs.`);
+    }
+    // Show wagon wheel for all scoring shots (1, 2, 3, 4, 6)
+    if (r >= 1) {
+      onShotPlayed();
     }
   }
 
@@ -51,16 +56,33 @@ export default function ActionPad({ onWicket, onEndInnings, onExtra, onBoundary,
     if (disabled) return;
     haptic.wicket();
     sound.playWicket();
-    // We let ResultModal handle specific wicket TTS if we wanted, but let's just do a generic one
     sound.speakCommentary('Oh he is out! Wicket!');
     onWicket();
   }
 
   function handleUndo() {
+    if (disabled) return;
     if (undoLastBall()) {
       haptic.tap();
       sound.playTap();
     }
+  }
+
+  function handleSwap() {
+    if (disabled) return;
+    swapBatters();
+    haptic.tap();
+    sound.playTap();
+  }
+
+  function handleCustomRun(r: number) {
+    if (disabled) return;
+    addRun(r);
+    haptic.tap();
+    sound.playTap();
+    sound.speakCommentary(`${r} runs! Overthrow!`);
+    setShowCustomRuns(false);
+    onShotPlayed();
   }
 
   const runLabels: Record<number, string> = {
@@ -69,7 +91,6 @@ export default function ActionPad({ onWicket, onEndInnings, onExtra, onBoundary,
     2: 'Double',
     3: 'Three runs',
     4: 'FOUR!',
-    5: 'Five runs',
     6: 'SIX!',
   };
 
@@ -80,10 +101,10 @@ export default function ActionPad({ onWicket, onEndInnings, onExtra, onBoundary,
         <button className="ap-ctrl-btn" onClick={handleUndo} aria-label="Undo last ball" title="Undo last ball (U)">
           <RotateCcw size={16} /> Undo
         </button>
-        <button className="ap-ctrl-btn" onClick={swapBatters} aria-label="Swap batters" title="Swap striker/non-striker (S)">
+        <button className="ap-ctrl-btn" onClick={handleSwap} aria-label="Swap batters" title="Swap striker/non-striker (S)">
           <ArrowLeftRight size={16} /> Swap
         </button>
-        <button className="ap-ctrl-btn" onClick={() => retireBatter('hurt')} aria-label="Retire batter hurt" title="Retire current striker">
+        <button className="ap-ctrl-btn" onClick={() => { if (!disabled) retireBatter('hurt'); }} aria-label="Retire batter hurt" title="Retire current striker">
           <UserX size={16} /> Retire
         </button>
         {onEndInnings && (
@@ -95,20 +116,66 @@ export default function ActionPad({ onWicket, onEndInnings, onExtra, onBoundary,
 
       {/* Main Run Buttons */}
       <div className="ap-runs">
-        {[0, 1, 2, 3, 4, 5, 6].map((r) => (
+        {[0, 1, 2, 3].map((r) => (
           <button
             key={r}
-            className={`ap-run-btn ${r === 4 ? 'four' : r === 6 ? 'six' : ''}`}
+            className="ap-run-btn"
             onClick={() => handleRun(r)}
             aria-label={`${runLabels[r]} — ${r} runs`}
             title={`${runLabels[r]} (${r})`}
           >
             <span className="ap-run-num">{r}</span>
-            {r === 4 && <span className="ap-run-label">FOUR</span>}
-            {r === 6 && <span className="ap-run-label">SIX</span>}
           </button>
         ))}
+        <button
+          className="ap-run-btn four"
+          onClick={() => handleRun(4)}
+          aria-label="FOUR — 4 runs"
+          title="FOUR (4)"
+        >
+          <span className="ap-run-num">4</span>
+          <span className="ap-run-label">FOUR</span>
+        </button>
+        <button
+          className="ap-run-btn custom-btn"
+          onClick={() => setShowCustomRuns(!showCustomRuns)}
+          aria-label="Custom runs (overthrow)"
+          title="Custom runs"
+        >
+          <Plus size={20} />
+          <span className="ap-run-label">MORE</span>
+        </button>
+        <button
+          className="ap-run-btn six"
+          onClick={() => handleRun(6)}
+          aria-label="SIX — 6 runs"
+          title="SIX (6)"
+        >
+          <span className="ap-run-num">6</span>
+          <span className="ap-run-label">SIX</span>
+        </button>
       </div>
+
+      {/* Custom Runs Popup (for overthrows etc.) */}
+      {showCustomRuns && (
+        <div className="ap-custom-runs slide-down">
+          <p className="ap-custom-label">Custom Runs (Overthrow etc.)</p>
+          <div className="ap-custom-grid">
+            {[5, 7, 8].map((r) => (
+              <button
+                key={r}
+                className="ap-custom-btn"
+                onClick={() => handleCustomRun(r)}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
+          <button className="ap-custom-cancel" onClick={() => setShowCustomRuns(false)}>
+            Cancel
+          </button>
+        </div>
+      )}
 
       {/* Extras & Wicket */}
       <div className="ap-extras">
@@ -123,9 +190,6 @@ export default function ActionPad({ onWicket, onEndInnings, onExtra, onBoundary,
         </button>
         <button className="ap-extra-btn" onClick={() => handleExtra('legbye')} aria-label="Leg bye" title="Leg bye">
           LEG BYE
-        </button>
-        <button className="ap-extra-btn penalty-btn" onClick={() => handleExtra('penalty')} aria-label="Penalty runs — 5 runs" title="Penalty (5 runs for fielding infraction)">
-          <Shield size={13} /> +5 PEN
         </button>
         <button className="ap-wicket-btn" onClick={handleWicket} aria-label="Wicket" title="Wicket">
           WICKET

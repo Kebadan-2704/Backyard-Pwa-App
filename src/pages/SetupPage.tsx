@@ -14,7 +14,7 @@ export default function SetupPage() {
   const [t1, setT1] = useState('INDIA');
   const [t2, setT2] = useState('AUSTRALIA');
   const [overs, setOvers] = useState(6);
-  const [tossW, setTossW] = useState('INDIA');
+  const [tossW, setTossW] = useState('');
   const [tossC, setTossC] = useState<'bat' | 'bowl'>('bat');
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isFlipping, setIsFlipping] = useState(false);
@@ -169,7 +169,8 @@ export default function SetupPage() {
                 <label>Match Type</label>
                 <select value={matchType} onChange={(e) => setMatchType(e.target.value as MatchType)}>
                   <option value="friendly">Friendly Match</option>
-                  <option value="practice">Practice Game</option>
+                  <option value="hand_cricket">Hand Cricket</option>
+                  <option value="book_cricket">Book Cricket</option>
                   <option value="league">League Match</option>
                   <option value="knockout">Tournament / Knockout</option>
                 </select>
@@ -208,11 +209,14 @@ export default function SetupPage() {
               <div className="field">
                 <label>Overs per Innings</label>
                 <input 
-                  type="number" 
-                  value={overs || ''} 
-                  onChange={(e) => setOvers(parseInt(e.target.value) || 0)}
-                  min={1} 
-                  max={50}
+                  inputMode="numeric" 
+                  pattern="[0-9]*"
+                  value={overs === 0 ? '' : overs} 
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^0-9]/g, '');
+                    setOvers(val === '' ? 0 : Math.min(parseInt(val), 50));
+                  }}
+                  onBlur={() => { if (overs < 1) setOvers(1); }}
                 />
               </div>
             </div>
@@ -275,16 +279,7 @@ export default function SetupPage() {
             )}
           </div>
           
-          <div className="glass-card advanced-toggle" onClick={() => setShowAdvanced(!showAdvanced)}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Settings2 size={16} />
-              <span style={{ fontWeight: 600, fontSize: 13 }}>ADVANCED SETTINGS & ROSTERS</span>
-            </div>
-            <ChevronRight size={16} style={{ transform: showAdvanced ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }} />
-          </div>
-
-          {showAdvanced && (
-            <div className="advanced-settings slide-down">
+          <div className="advanced-settings slide-down" style={{ marginTop: 24 }}>
               <div className="glass-card">
                 <div className="card-title">TEAM ROSTERS</div>
                 <div className="field" style={{ marginBottom: 16 }}>
@@ -363,33 +358,57 @@ export default function SetupPage() {
                   <div className="field">
                     <label>Players per team</label>
                     <input 
-                      type="number" 
-                      value={settings.playersPerTeam}
-                      onChange={(e) => setSettings({...settings, playersPerTeam: parseInt(e.target.value) || 11, maxWickets: (parseInt(e.target.value) || 11) - 1})}
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={settings.playersPerTeam === 0 ? '' : settings.playersPerTeam}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/[^0-9]/g, '');
+                        const num = val === '' ? 0 : parseInt(val);
+                        const updates: Partial<MatchSettings> = { playersPerTeam: num };
+                        // If Last Man Standing is on, auto-sync wickets
+                        if (settings.lastManStanding && num > 0) {
+                          updates.maxWickets = num;
+                        }
+                        setSettings({...settings, ...updates});
+                      }}
+                      onBlur={() => { if (settings.playersPerTeam < 2) setSettings({...settings, playersPerTeam: 2}); }}
                     />
                   </div>
                   <div className="field">
                     <label>Wickets to all-out</label>
                     <input 
-                      type="number" 
-                      value={settings.maxWickets}
-                      onChange={(e) => setSettings({...settings, maxWickets: parseInt(e.target.value) || 10})}
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={settings.maxWickets === 0 ? '' : settings.maxWickets}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/[^0-9]/g, '');
+                        setSettings({...settings, maxWickets: val === '' ? 0 : parseInt(val)});
+                      }}
+                      onBlur={() => { if (settings.maxWickets < 1) setSettings({...settings, maxWickets: 1}); }}
                     />
                   </div>
                   <div className="field">
-                    <label>Max overs / bowler</label>
+                    <label>Max overs / bowler (Leave empty for unlimited)</label>
                     <input 
-                      type="number" 
-                      value={settings.maxOversPerBowler}
-                      onChange={(e) => setSettings({...settings, maxOversPerBowler: parseInt(e.target.value) || 2})}
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={settings.maxOversPerBowler === 0 ? '' : settings.maxOversPerBowler}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/[^0-9]/g, '');
+                        setSettings({...settings, maxOversPerBowler: val === '' ? 0 : parseInt(val)});
+                      }}
                     />
                   </div>
                   <div className="field">
                     <label>Powerplay overs</label>
                     <input 
-                      type="number" 
-                      value={settings.powerplayOvers}
-                      onChange={(e) => setSettings({...settings, powerplayOvers: parseInt(e.target.value) || 0})}
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={settings.powerplayOvers === 0 ? '' : settings.powerplayOvers}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/[^0-9]/g, '');
+                        setSettings({...settings, powerplayOvers: val === '' ? 0 : parseInt(val)});
+                      }}
                     />
                   </div>
                 </div>
@@ -407,7 +426,18 @@ export default function SetupPage() {
                     <input 
                       type="checkbox" 
                       checked={settings.lastManStanding}
-                      onChange={(e) => setSettings({...settings, lastManStanding: e.target.checked})}
+                      onChange={(e) => {
+                        const lms = e.target.checked;
+                        const updates: Partial<MatchSettings> = { lastManStanding: lms };
+                        if (lms) {
+                          // When LMS is on, all-out = number of players (last man bats solo)
+                          updates.maxWickets = settings.playersPerTeam;
+                        } else {
+                          // When LMS is off, default to players - 1
+                          updates.maxWickets = Math.max(1, settings.playersPerTeam - 1);
+                        }
+                        setSettings({...settings, ...updates});
+                      }}
                     />
                     Last Man Standing (solo batting)
                   </label>
@@ -430,8 +460,6 @@ export default function SetupPage() {
                 </div>
               </div>
             </div>
-          )}
-
           <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
             <button className="btn-secondary" onClick={() => setStep(2)}>BACK</button>
             <button 

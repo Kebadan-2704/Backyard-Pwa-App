@@ -19,7 +19,7 @@ export type DismissalType =
 
 export type ExtraType = 'wide' | 'noball' | 'bye' | 'legbye' | 'penalty';
 
-export type MatchType = 'friendly' | 'league' | 'knockout' | 'practice' | 'superover';
+export type MatchType = 'friendly' | 'league' | 'knockout' | 'superover' | 'hand_cricket' | 'book_cricket';
 
 export type PitchCondition = '' | 'dry' | 'wet' | 'flat' | 'turning' | 'green' | 'dusty';
 

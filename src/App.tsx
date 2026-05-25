@@ -66,13 +66,15 @@ function AuthWrapper({ children }: { children: React.ReactNode }) {
 export default function App() {
   const theme = useAppStore((s) => s.settings.theme);
   const fontSize = useAppStore((s) => s.settings.fontSize);
+  const colorAccent = useAppStore((s) => s.settings.colorAccent);
   const setDeferredPrompt = useAppStore((s) => s.setDeferredPrompt);
 
   // Apply theme and font size to document body
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     document.documentElement.setAttribute('data-fontsize', fontSize);
-  }, [theme, fontSize]);
+    document.documentElement.setAttribute('data-accent', colorAccent);
+  }, [theme, fontSize, colorAccent]);
 
   // Capture PWA install prompt
   useEffect(() => {

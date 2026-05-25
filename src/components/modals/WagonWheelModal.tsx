@@ -12,7 +12,7 @@ export default function WagonWheelModal({ onSelectRegion, onSkip }: Props) {
     <div className="modal-overlay">
       <div className="modal-content" style={{ maxWidth: 400, textAlign: 'center' }}>
         <h2 style={{ marginBottom: 8 }}>WHERE DID IT GO?</h2>
-        <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 24 }}>Tap the zone where the boundary was hit.</p>
+        <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 24 }}>Tap the zone where the shot was played.</p>
 
         <div style={{ position: 'relative', width: 300, height: 300, margin: '0 auto', borderRadius: '50%', background: '#2c7a2c', border: '2px solid white', overflow: 'hidden' }}>
           {/* Pitch */}

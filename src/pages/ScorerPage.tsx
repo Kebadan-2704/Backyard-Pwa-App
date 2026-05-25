@@ -191,14 +191,10 @@ export default function ScorerPage() {
             }
           }}
           onExtra={(type) => {
-             if (type === 'penalty') {
-                useMatchStore.getState().addExtra('penalty', 5);
-             } else {
-                setSelectedExtraType(type);
-                setShowExtrasModal(true);
-             }
+             setSelectedExtraType(type);
+             setShowExtrasModal(true);
           }}
-          onBoundary={() => {
+          onShotPlayed={() => {
              setShowWagonWheel(true);
           }}
           disabled={!isActiveScorer || showBatterSelectForced || showBowlerSelectForced || match.complete} 

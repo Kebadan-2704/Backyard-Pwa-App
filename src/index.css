@@ -61,6 +61,35 @@
   --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.4);
 }
 
+/* ——— ACCENT COLOR OVERRIDES ——— */
+[data-accent="green"] {
+  --gold: #2ECC71;
+  --gold-light: #27AE60;
+  --border-glow: rgba(46, 204, 113, 0.3);
+  --shadow-glow: 0 4px 20px rgba(46, 204, 113, 0.25);
+}
+
+[data-accent="blue"] {
+  --gold: #3498DB;
+  --gold-light: #2980B9;
+  --border-glow: rgba(52, 152, 219, 0.3);
+  --shadow-glow: 0 4px 20px rgba(52, 152, 219, 0.25);
+}
+
+[data-accent="purple"] {
+  --gold: #9B59B6;
+  --gold-light: #8E44AD;
+  --border-glow: rgba(155, 89, 182, 0.3);
+  --shadow-glow: 0 4px 20px rgba(155, 89, 182, 0.25);
+}
+
+[data-accent="red"] {
+  --gold: #E74C3C;
+  --gold-light: #C0392B;
+  --border-glow: rgba(231, 76, 60, 0.3);
+  --shadow-glow: 0 4px 20px rgba(231, 76, 60, 0.25);
+}
+
 /* ——— THEME: DAY MATCH (Light) ——— */
 [data-theme="light"] {
   --bg-body: #F4F7FB;
@@ -215,7 +244,8 @@ body::before {
   background: var(--bg-nav);
   border-top: 1px solid var(--border);
   box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
-  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
+  margin-bottom: 0;
 }
 
 /* Landscape orientation on mobile devices */

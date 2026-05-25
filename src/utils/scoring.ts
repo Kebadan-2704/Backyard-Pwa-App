@@ -173,7 +173,8 @@ export function canBowlerBowl(
   lastOverBowler: string
 ): { allowed: boolean; warning?: string; reason?: string } {
   const bowler = bowlers[bowlerName];
-  if (bowler) {
+  // maxOversPerBowler === 0 means unlimited
+  if (bowler && maxOversPerBowler > 0) {
     const totalOvers = bowler.overs;
     if (totalOvers >= maxOversPerBowler) {
       return { allowed: false, reason: `${bowlerName} has completed max overs (${maxOversPerBowler})` };

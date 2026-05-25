@@ -1,5 +1,6 @@
 .action-pad {
   margin-top: 16px;
+  padding-bottom: 24px;
 }
 
 .action-pad.disabled {
@@ -12,6 +13,7 @@
   border: 2px solid var(--leather);
   border-radius: var(--radius-lg);
   padding: 16px;
+  padding-bottom: 24px;
   background: rgba(231, 76, 60, 0.05);
   box-shadow: inset 0 0 40px rgba(231, 76, 60, 0.1);
   animation: free-hit-bg-glow 1.5s ease-in-out infinite;
@@ -147,9 +149,101 @@
   box-shadow: 0 8px 24px rgba(155, 89, 182, 0.3);
 }
 
+/* Custom / More button */
+.ap-run-btn.custom-btn {
+  background: rgba(245, 166, 35, 0.05);
+  border-color: rgba(245, 166, 35, 0.25);
+  color: var(--gold);
+  border-style: dashed;
+}
+
+.ap-run-btn.custom-btn:hover {
+  background: rgba(245, 166, 35, 0.15);
+  border-color: var(--gold);
+  border-style: solid;
+  box-shadow: 0 8px 24px rgba(245, 166, 35, 0.2);
+}
+
+/* Custom runs popup */
+.ap-custom-runs {
+  margin-bottom: 12px;
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.ap-custom-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+
+.ap-custom-grid {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.ap-custom-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: rgba(245, 166, 35, 0.08);
+  border: 1px solid rgba(245, 166, 35, 0.3);
+  color: var(--gold);
+  font-family: var(--font-display);
+  font-size: 24px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.ap-custom-btn:hover {
+  background: rgba(245, 166, 35, 0.2);
+  border-color: var(--gold);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(245, 166, 35, 0.3);
+}
+
+.ap-custom-btn:active {
+  transform: translateY(0) scale(0.95);
+}
+
+.ap-custom-cancel {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  padding: 6px 16px;
+  transition: color 0.2s;
+}
+
+.ap-custom-cancel:hover {
+  color: var(--text-primary);
+}
+
+/* Slide down animation */
+.slide-down {
+  animation: ap-slide-down 0.2s ease-out;
+}
+
+@keyframes ap-slide-down {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .ap-extras {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 8px;
 }
 
@@ -199,16 +293,6 @@
   box-shadow: 0 4px 16px rgba(231, 76, 60, 0.2);
 }
 
-.ap-extra-btn.penalty-btn {
-  color: var(--purple);
-  border-color: rgba(155, 89, 182, 0.2);
-}
-.ap-extra-btn.penalty-btn:hover {
-  background: rgba(155, 89, 182, 0.1);
-  border-color: var(--purple);
-  box-shadow: 0 4px 16px rgba(155, 89, 182, 0.2);
-}
-
 .ap-wicket-btn {
   grid-column: 1 / -1;
   padding: 16px;
@@ -240,4 +324,5 @@
   .ap-run-btn { padding: 10px 0; border-radius: 8px; }
   .ap-wicket-btn { font-size: 20px; padding: 14px; }
   .ap-ctrl-btn { font-size: 10px; padding: 10px 6px; }
+  .ap-custom-btn { width: 48px; height: 48px; font-size: 20px; }
 }
