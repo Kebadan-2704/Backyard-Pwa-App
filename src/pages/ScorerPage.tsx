@@ -133,8 +133,11 @@ export default function ScorerPage() {
 
   const ci = match.currentInnings;
   const inn = match.innings[ci];
+  const isOnePlayerTeam = match.settings.playersPerTeam === 1;
+  const isLastManStanding = match.settings.lastManStanding && inn.wickets >= match.settings.maxWickets - 1;
+  
   const needsStriker = !inn.striker;
-  const needsNonStriker = !!inn.striker && !inn.nonStriker;
+  const needsNonStriker = !!inn.striker && !inn.nonStriker && !isOnePlayerTeam && !isLastManStanding;
   const needsBowler = !inn.currentBowler;
   
   // Enforce required selections

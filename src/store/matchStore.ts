@@ -199,7 +199,6 @@ function checkAndEndInnings(
   get: () => MatchState,
 ): boolean {
   const allOut = inn.wickets >= m.settings.maxWickets;
-  const lastMan = m.settings.lastManStanding && inn.wickets >= m.settings.maxWickets - 1;
   const allOvers = legalAfter >= m.settings.overs * 6;
 
   // Chase won
@@ -226,7 +225,7 @@ function checkAndEndInnings(
     milestones.push({ message: `ALL OUT! 💥`, emoji: '💥' });
   }
 
-  if (allOut || lastMan || allOvers) {
+  if (allOut || allOvers) {
     set({
       match: m,
       pendingMilestones: milestones,
@@ -419,7 +418,7 @@ export const useMatchStore = create<MatchState>()(
 
         // Swap on odd runs
         let swapped = false;
-        if (runs % 2 === 1) {
+        if (runs % 2 === 1 && inn.nonStriker) {
           [inn.striker, inn.nonStriker] = [inn.nonStriker, inn.striker];
           swapped = true;
         }
@@ -433,7 +432,9 @@ export const useMatchStore = create<MatchState>()(
         if (legalAfter > 0 && legalAfter % 6 === 0 && legalAfter > legalBefore) {
           delivery.wasEndOfOver = true;
           // Swap batters at end of over
-          [inn.striker, inn.nonStriker] = [inn.nonStriker, inn.striker];
+          if (inn.nonStriker) {
+            [inn.striker, inn.nonStriker] = [inn.nonStriker, inn.striker];
+          }
 
           // Build over summary
           const overDeliveries = getCurrentOverDeliveries(inn.deliveries);
@@ -564,7 +565,7 @@ export const useMatchStore = create<MatchState>()(
           }
 
           // Swap on odd byes/legbyes
-          if (delivery.runs % 2 === 1) {
+          if (delivery.runs % 2 === 1 && inn.nonStriker) {
             [inn.striker, inn.nonStriker] = [inn.nonStriker, inn.striker];
             delivery.swappedBatters = true;
           }
@@ -573,7 +574,9 @@ export const useMatchStore = create<MatchState>()(
           const legalAfter = getLegalBallCount(inn.deliveries);
           if (legalAfter > 0 && legalAfter % 6 === 0 && legalAfter > legalBefore) {
             delivery.wasEndOfOver = true;
-            [inn.striker, inn.nonStriker] = [inn.nonStriker, inn.striker];
+            if (inn.nonStriker) {
+              [inn.striker, inn.nonStriker] = [inn.nonStriker, inn.striker];
+            }
 
             const overDeliveries = getCurrentOverDeliveries(inn.deliveries);
             const summary = buildOverSummary(overDeliveries, Math.floor(legalAfter / 6), inn.currentBowler);
@@ -613,7 +616,7 @@ export const useMatchStore = create<MatchState>()(
           // Swap on odd wide runs (more than 1 run off a wide)
           // Wide is 1. If they ran 1, extraRuns = 2 (1 wide + 1 run). So ran = extraRuns - 1.
           const ran = extraRuns - 1;
-          if (ran % 2 === 1) {
+          if (ran % 2 === 1 && inn.nonStriker) {
              [inn.striker, inn.nonStriker] = [inn.nonStriker, inn.striker];
              delivery.swappedBatters = true;
           }
@@ -655,10 +658,10 @@ export const useMatchStore = create<MatchState>()(
           // Swap on odd batter runs (or odd extra runs? Usually batters swap based on total runs run)
           // If total runs is odd (excluding boundary), they swap. 
           // Note: If batter hits 4 or 6 off a no ball, they don't swap.
-          if (batterRuns > 0 && batterRuns % 2 === 1 && batterRuns !== 5) {
+          if (batterRuns > 0 && batterRuns % 2 === 1 && batterRuns !== 5 && inn.nonStriker) {
              [inn.striker, inn.nonStriker] = [inn.nonStriker, inn.striker];
              delivery.swappedBatters = true;
-          } else if (batterRuns === 0 && extraRuns > 1 && (extraRuns - 1) % 2 === 1) {
+          } else if (batterRuns === 0 && extraRuns > 1 && (extraRuns - 1) % 2 === 1 && inn.nonStriker) {
              // they ran byes off a no ball. extraRuns = 1 noball + X byes.
              // if X is odd, they swap.
              [inn.striker, inn.nonStriker] = [inn.nonStriker, inn.striker];
@@ -847,7 +850,7 @@ export const useMatchStore = create<MatchState>()(
         }
 
         // Swap on odd runs before wicket
-        if (config.runsBeforeWicket % 2 === 1) {
+        if (config.runsBeforeWicket % 2 === 1 && inn.nonStriker) {
           [inn.striker, inn.nonStriker] = [inn.nonStriker, inn.striker];
           delivery.swappedBatters = true;
         }
@@ -877,7 +880,9 @@ export const useMatchStore = create<MatchState>()(
         if (legalAfter > 0 && legalAfter % 6 === 0 && legalAfter > legalBefore) {
           delivery.wasEndOfOver = true;
           endOfOver = true;
-          [inn.striker, inn.nonStriker] = [inn.nonStriker, inn.striker];
+          if (inn.nonStriker) {
+            [inn.striker, inn.nonStriker] = [inn.nonStriker, inn.striker];
+          }
 
           const overDeliveries = getCurrentOverDeliveries(inn.deliveries);
           const summary = buildOverSummary(overDeliveries, Math.floor(legalAfter / 6), inn.currentBowler);
@@ -885,7 +890,14 @@ export const useMatchStore = create<MatchState>()(
             if (summary.isMaiden) inn.bowlers[inn.currentBowler].maidens++;
           }
           inn.overSummaries.push(summary);
-          if (inn.currentBowler) finalizeBowlerOver(inn, inn.currentBowler);
+        if (inn.currentBowler) finalizeBowlerOver(inn, inn.currentBowler);
+        }
+
+        // Auto-promote non-striker to striker if we are in last man standing phase and striker is empty
+        const isLastManPhase = m.settings.lastManStanding && inn.wickets >= m.settings.maxWickets - 1;
+        if (isLastManPhase && !inn.striker && inn.nonStriker) {
+          inn.striker = inn.nonStriker;
+          inn.nonStriker = '';
         }
 
         if (checkAndEndInnings(m, inn, ci, legalAfter, milestones, null, set, get)) return;
@@ -957,7 +969,9 @@ export const useMatchStore = create<MatchState>()(
 
         // 1. Reverse end-of-over swap first
         if (d.wasEndOfOver) {
-          [inn.striker, inn.nonStriker] = [inn.nonStriker, inn.striker];
+          if (inn.nonStriker) {
+            [inn.striker, inn.nonStriker] = [inn.nonStriker, inn.striker];
+          }
           // Remove last over summary
           if (inn.overSummaries.length > 0) inn.overSummaries.pop();
           // Restore bowler's over count

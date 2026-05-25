@@ -70,8 +70,14 @@ export default function SetupPage() {
   }
 
   function handleStart() {
-    if (!t1.trim() || !t2.trim()) return;
-    if (!tossW) return;
+    if (!t1.trim() || !t2.trim()) {
+      alert("Please enter both team names");
+      return;
+    }
+    if (!tossW) {
+      alert("Please complete the toss before starting the match");
+      return;
+    }
     
     // Parse players
     const p1 = t1Players;
@@ -190,7 +196,7 @@ export default function SetupPage() {
               </div>
             </div>
 
-            {matchType === 'knockout' && (
+            {['knockout', 'league'].includes(matchType) && (
               <div className="format-grid" style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
                 <div className="field">
                   <label>Number of Teams in Tournament</label>
@@ -306,10 +312,10 @@ export default function SetupPage() {
                       placeholder="Enter new player..."
                       style={{ flex: 1 }}
                     />
-                    <button className="btn-secondary" style={{ padding: '0 12px', flex: 'none', width: 'auto' }} onClick={() => handleAddPlayer(1)}>
+                    <button type="button" className="btn-secondary" style={{ padding: '0 12px', flex: 'none', width: 'auto' }} onClick={() => handleAddPlayer(1)}>
                       <Plus size={16} />
                     </button>
-                    <button className="btn-primary-small" style={{ fontSize: 11, padding: '0 12px', flex: 'none' }} onClick={() => setSelectModalTarget(1)}>
+                    <button type="button" className="btn-primary-small" style={{ fontSize: 11, padding: '0 12px', flex: 'none' }} onClick={() => setSelectModalTarget(1)}>
                       LIBRARY
                     </button>
                   </div>
@@ -334,10 +340,10 @@ export default function SetupPage() {
                       placeholder="Enter new player..."
                       style={{ flex: 1 }}
                     />
-                    <button className="btn-secondary" style={{ padding: '0 12px', flex: 'none', width: 'auto' }} onClick={() => handleAddPlayer(2)}>
+                    <button type="button" className="btn-secondary" style={{ padding: '0 12px', flex: 'none', width: 'auto' }} onClick={() => handleAddPlayer(2)}>
                       <Plus size={16} />
                     </button>
-                    <button className="btn-primary-small" style={{ fontSize: 11, padding: '0 12px', flex: 'none' }} onClick={() => setSelectModalTarget(2)}>
+                    <button type="button" className="btn-primary-small" style={{ fontSize: 11, padding: '0 12px', flex: 'none' }} onClick={() => setSelectModalTarget(2)}>
                       LIBRARY
                     </button>
                   </div>
@@ -363,10 +369,10 @@ export default function SetupPage() {
                       placeholder="Enter joker..."
                       style={{ flex: 1 }}
                     />
-                    <button className="btn-secondary" style={{ padding: '0 12px', flex: 'none', width: 'auto' }} onClick={() => handleAddPlayer(3)}>
+                    <button type="button" className="btn-secondary" style={{ padding: '0 12px', flex: 'none', width: 'auto' }} onClick={() => handleAddPlayer(3)}>
                       <Plus size={16} />
                     </button>
-                    <button className="btn-primary-small" style={{ fontSize: 11, padding: '0 12px', flex: 'none' }} onClick={() => setSelectModalTarget(3)}>
+                    <button type="button" className="btn-primary-small" style={{ fontSize: 11, padding: '0 12px', flex: 'none' }} onClick={() => setSelectModalTarget(3)}>
                       LIBRARY
                     </button>
                   </div>
@@ -423,7 +429,7 @@ export default function SetupPage() {
                         }
                         setSettings({...settings, ...updates});
                       }}
-                      onBlur={() => { if (settings.playersPerTeam < 2) setSettings({...settings, playersPerTeam: 2}); }}
+                      onBlur={() => { if (settings.playersPerTeam < 1) setSettings({...settings, playersPerTeam: 1}); }}
                     />
                   </div>
                   <div className="field">

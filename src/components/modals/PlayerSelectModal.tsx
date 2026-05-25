@@ -42,7 +42,7 @@ export default function PlayerSelectModal({ onClose, onSelect, alreadySelected, 
     <div className="modal-backdrop">
       <div className="modal-content slide-up" style={{ maxWidth: 400, width: '100%' }}>
         <div className="modal-header">
-          <h2>Select {teamName} Players</h2>
+          <h2>{teamName === 'Common' ? 'Common Players' : `${teamName} Squad`}</h2>
           <button className="close-btn" onClick={onClose}><X size={20} /></button>
         </div>
 
