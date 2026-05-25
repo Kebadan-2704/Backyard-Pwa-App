@@ -40,6 +40,15 @@ export default function Navbar() {
           <span className="nav-tab-label">Cup</span>
         </NavLink>
         <NavLink
+          to="/players"
+          className={({ isActive }) => `nav-tab ${isActive ? 'active' : ''}`}
+          aria-label="Players"
+          role="tab"
+        >
+          <Users size={14} />
+          <span className="nav-tab-label">Players</span>
+        </NavLink>
+        <NavLink
           to="/history"
           className={({ isActive }) => `nav-tab ${isActive ? 'active' : ''}`}
           aria-label="Match History"

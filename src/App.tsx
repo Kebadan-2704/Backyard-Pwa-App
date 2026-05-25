@@ -29,6 +29,7 @@ import DraftPage from './pages/DraftPage';
 import BroadcastPage from './pages/BroadcastPage';
 import ArchivesPage from './pages/ArchivesPage';
 import TournamentDashboard from './pages/TournamentDashboard';
+import PlayersPage from './pages/PlayersPage';
 
 import LoginPage from './pages/LoginPage';
 
@@ -138,6 +139,7 @@ export default function App() {
           <Route path="/broadcast" element={<BroadcastPage />} />
           <Route path="/archives" element={<ArchivesPage />} />
           <Route path="/tournament" element={<TournamentDashboard />} />
+          <Route path="/players" element={<PlayersPage />} />
           <Route path="/live/:matchId" element={<SpectatorPage />} />
         </Routes>
       </main>

@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useMatchStore } from '../store/matchStore';
 import { createDefaultSettings } from '../types/cricket';
 import type { MatchSettings, MatchType, PitchCondition } from '../types/cricket';
-import { ChevronRight, Settings2, ShieldAlert, X, Plus } from 'lucide-react';
+import { ChevronRight, Settings2, ShieldAlert, X, Plus, ChevronDown, Upload } from 'lucide-react';
+import PlayerSelectModal from '../components/modals/PlayerSelectModal';
 import './SetupPage.css';
 
 export default function SetupPage() {
@@ -40,6 +41,9 @@ export default function SetupPage() {
   // Common / Joker Players
   const [commonPlayers, setCommonPlayers] = useState<string[]>([]);
   const [commonInput, setCommonInput] = useState('');
+
+  // Bulk Selection Modal State
+  const [selectModalTarget, setSelectModalTarget] = useState<1 | 2 | 3 | null>(null);
 
   function handleAddPlayer(team: 1 | 2 | 3) {
     if (team === 1 && t1Input.trim()) {
@@ -299,10 +303,14 @@ export default function SetupPage() {
                       value={t1Input} 
                       onChange={(e) => setT1Input(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleAddPlayer(1)}
-                      placeholder="Enter player name..."
+                      placeholder="Enter new player..."
+                      style={{ flex: 1 }}
                     />
-                    <button className="btn-secondary" style={{ padding: '0 16px' }} onClick={() => handleAddPlayer(1)}>
+                    <button className="btn-secondary" style={{ padding: '0 12px', flex: 'none' }} onClick={() => handleAddPlayer(1)}>
                       <Plus size={16} />
+                    </button>
+                    <button className="btn-primary-small" style={{ fontSize: 11, padding: '0 12px', flex: 'none' }} onClick={() => setSelectModalTarget(1)}>
+                      LIBRARY
                     </button>
                   </div>
                   <div className="roster-pills">
@@ -323,10 +331,14 @@ export default function SetupPage() {
                       value={t2Input} 
                       onChange={(e) => setT2Input(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleAddPlayer(2)}
-                      placeholder="Enter player name..."
+                      placeholder="Enter new player..."
+                      style={{ flex: 1 }}
                     />
-                    <button className="btn-secondary" style={{ padding: '0 16px' }} onClick={() => handleAddPlayer(2)}>
+                    <button className="btn-secondary" style={{ padding: '0 12px', flex: 'none' }} onClick={() => handleAddPlayer(2)}>
                       <Plus size={16} />
+                    </button>
+                    <button className="btn-primary-small" style={{ fontSize: 11, padding: '0 12px', flex: 'none' }} onClick={() => setSelectModalTarget(2)}>
+                      LIBRARY
                     </button>
                   </div>
                   <div className="roster-pills">
@@ -348,10 +360,14 @@ export default function SetupPage() {
                       value={commonInput} 
                       onChange={(e) => setCommonInput(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleAddPlayer(3)}
-                      placeholder="Enter joker name..."
+                      placeholder="Enter joker..."
+                      style={{ flex: 1 }}
                     />
-                    <button className="btn-secondary" style={{ padding: '0 16px' }} onClick={() => handleAddPlayer(3)}>
+                    <button className="btn-secondary" style={{ padding: '0 12px', flex: 'none' }} onClick={() => handleAddPlayer(3)}>
                       <Plus size={16} />
+                    </button>
+                    <button className="btn-primary-small" style={{ fontSize: 11, padding: '0 12px', flex: 'none' }} onClick={() => setSelectModalTarget(3)}>
+                      LIBRARY
                     </button>
                   </div>
                   <div className="roster-pills">
@@ -507,6 +523,20 @@ export default function SetupPage() {
             </button>
           </div>
         </div>
+      )}
+
+      {selectModalTarget && (
+        <PlayerSelectModal
+          teamName={selectModalTarget === 1 ? t1 : selectModalTarget === 2 ? t2 : 'Common'}
+          alreadySelected={selectModalTarget === 1 ? t1Players : selectModalTarget === 2 ? t2Players : commonPlayers}
+          onClose={() => setSelectModalTarget(null)}
+          onSelect={(selectedPlayers) => {
+            if (selectModalTarget === 1) setT1Players(selectedPlayers);
+            if (selectModalTarget === 2) setT2Players(selectedPlayers);
+            if (selectModalTarget === 3) setCommonPlayers(selectedPlayers);
+            setSelectModalTarget(null);
+          }}
+        />
       )}
     </div>
   );

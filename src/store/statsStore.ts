@@ -13,6 +13,9 @@ interface StatsStoreState {
   setActiveTournament: (id: string | null) => void;
   createTournament: (name: string, teams: string[]) => void;
   clearStats: () => void;
+  createPlayer: (name: string) => void;
+  renamePlayer: (oldName: string, newName: string) => void;
+  deletePlayer: (name: string) => void;
 }
 
 function createEmptyPlayer(name: string): PlayerProfile {
@@ -47,6 +50,25 @@ export const useStatsStore = create<StatsStoreState>()(
       players: {},
       tournaments: {},
       activeTournamentId: null,
+
+      createPlayer: (name) => set((state) => {
+        if (state.players[name]) return state;
+        return { players: { ...state.players, [name]: createEmptyPlayer(name) } };
+      }),
+
+      renamePlayer: (oldName, newName) => set((state) => {
+        if (!state.players[oldName] || state.players[newName]) return state; // Ignore if source doesn't exist or target already exists
+        const newPlayers = { ...state.players };
+        newPlayers[newName] = { ...newPlayers[oldName], name: newName };
+        delete newPlayers[oldName];
+        return { players: newPlayers };
+      }),
+
+      deletePlayer: (name) => set((state) => {
+        const newPlayers = { ...state.players };
+        delete newPlayers[name];
+        return { players: newPlayers };
+      }),
 
       setActiveTournament: (id) => set({ activeTournamentId: id }),
 
