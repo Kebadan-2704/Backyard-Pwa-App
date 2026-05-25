@@ -180,8 +180,8 @@ export default function SetupPage() {
                 <label>Match Type</label>
                 <select value={matchType} onChange={(e) => setMatchType(e.target.value as MatchType)}>
                   <option value="friendly">Friendly Match</option>
-                  <option value="league">League Match</option>
-                  <option value="knockout">Tournament / Knockout</option>
+                  <option value="league">League tournament</option>
+                  <option value="knockout">Knockout tournament</option>
                 </select>
               </div>
             </div>

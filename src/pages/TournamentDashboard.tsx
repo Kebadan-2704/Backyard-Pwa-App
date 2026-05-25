@@ -108,8 +108,8 @@ export default function TournamentDashboard() {
             <div className="field">
               <label>Format</label>
               <select value={tFormat} onChange={e => setTFormat(e.target.value as TournamentFormat)}>
-                <option value="knockout">Knockout</option>
-                <option value="league">League (Round Robin)</option>
+                <option value="knockout">Knockout tournament</option>
+                <option value="league">League tournament</option>
               </select>
             </div>
             <div className="field">
