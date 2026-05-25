@@ -36,8 +36,12 @@ export default function SetupPage() {
   const [t2Players, setT2Players] = useState<string[]>([]);
   const [t1Input, setT1Input] = useState('');
   const [t2Input, setT2Input] = useState('');
+  
+  // Common / Joker Players
+  const [commonPlayers, setCommonPlayers] = useState<string[]>([]);
+  const [commonInput, setCommonInput] = useState('');
 
-  function handleAddPlayer(team: 1 | 2) {
+  function handleAddPlayer(team: 1 | 2 | 3) {
     if (team === 1 && t1Input.trim()) {
       const name = t1Input.trim();
       if (!t1Players.includes(name)) setT1Players([...t1Players, name]);
@@ -48,11 +52,17 @@ export default function SetupPage() {
       if (!t2Players.includes(name)) setT2Players([...t2Players, name]);
       setT2Input('');
     }
+    if (team === 3 && commonInput.trim()) {
+      const name = commonInput.trim();
+      if (!commonPlayers.includes(name)) setCommonPlayers([...commonPlayers, name]);
+      setCommonInput('');
+    }
   }
 
-  function handleRemovePlayer(team: 1 | 2, index: number) {
+  function handleRemovePlayer(team: 1 | 2 | 3, index: number) {
     if (team === 1) setT1Players(t1Players.filter((_, i) => i !== index));
     if (team === 2) setT2Players(t2Players.filter((_, i) => i !== index));
+    if (team === 3) setCommonPlayers(commonPlayers.filter((_, i) => i !== index));
   }
 
   function handleStart() {
@@ -63,8 +73,9 @@ export default function SetupPage() {
     const p1 = t1Players;
     const p2 = t2Players;
 
-    const actualP1 = p1;
-    const actualP2 = p2;
+    // Add Common Players (Jokers) to BOTH rosters
+    const actualP1 = [...p1, ...commonPlayers];
+    const actualP2 = [...p2, ...commonPlayers];
     const maxPlayers = Math.max(actualP1.length, actualP2.length, settings.playersPerTeam);
 
     startMatch({
@@ -169,8 +180,6 @@ export default function SetupPage() {
                 <label>Match Type</label>
                 <select value={matchType} onChange={(e) => setMatchType(e.target.value as MatchType)}>
                   <option value="friendly">Friendly Match</option>
-                  <option value="hand_cricket">Hand Cricket</option>
-                  <option value="book_cricket">Book Cricket</option>
                   <option value="league">League Match</option>
                   <option value="knockout">Tournament / Knockout</option>
                 </select>
@@ -286,6 +295,7 @@ export default function SetupPage() {
                   <label>{t1} Players ({t1Players.length})</label>
                   <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                     <input 
+                      list="historical-players"
                       value={t1Input} 
                       onChange={(e) => setT1Input(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleAddPlayer(1)}
@@ -305,10 +315,11 @@ export default function SetupPage() {
                   </div>
                 </div>
                 
-                <div className="field">
+                <div className="field" style={{ marginBottom: 16 }}>
                   <label>{t2} Players ({t2Players.length})</label>
                   <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                     <input 
+                      list="historical-players"
                       value={t2Input} 
                       onChange={(e) => setT2Input(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleAddPlayer(2)}
@@ -323,6 +334,31 @@ export default function SetupPage() {
                       <div key={i} className="roster-pill">
                         {p}
                         <X size={14} onClick={() => handleRemovePlayer(2, i)} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="field">
+                  <label>Common Players / Jokers ({commonPlayers.length})</label>
+                  <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 8 }}>Plays for both teams. Automatically added to both rosters.</div>
+                  <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                    <input 
+                      list="historical-players"
+                      value={commonInput} 
+                      onChange={(e) => setCommonInput(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleAddPlayer(3)}
+                      placeholder="Enter joker name..."
+                    />
+                    <button className="btn-secondary" style={{ padding: '0 16px' }} onClick={() => handleAddPlayer(3)}>
+                      <Plus size={16} />
+                    </button>
+                  </div>
+                  <div className="roster-pills">
+                    {commonPlayers.map((p, i) => (
+                      <div key={i} className="roster-pill" style={{ background: 'var(--blue)', color: 'white' }}>
+                        {p}
+                        <X size={14} onClick={() => handleRemovePlayer(3, i)} />
                       </div>
                     ))}
                   </div>

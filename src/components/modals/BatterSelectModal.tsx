@@ -11,15 +11,26 @@ export default function BatterSelectModal({ onClose }: Props) {
   const match = useMatchStore((s) => s.match);
   const setStriker = useMatchStore((s) => s.setStriker);
   const setNonStriker = useMatchStore((s) => s.setNonStriker);
+  const setBatterStyle = useMatchStore((s) => s.setBatterStyle);
   
   const [selected, setSelected] = useState('');
   const [customName, setCustomName] = useState('');
+  const [battingStyle, setBattingStyle] = useState<'RHB' | 'LHB'>('RHB');
 
   if (!match) return null;
 
   const ci = match.currentInnings;
   const battingTeamIdx = ci;
-  const teamPlayers = match.players ? match.players[battingTeamIdx] : [];
+  const teamPlayers = match.players ? [...match.players[battingTeamIdx]] : [];
+  
+  // Include custom players added as bowlers in the first innings
+  if (ci === 1 && match.innings[0]) {
+    const prevBowlers = Object.keys(match.innings[0].bowlers);
+    prevBowlers.forEach(b => {
+      if (!teamPlayers.includes(b)) teamPlayers.push(b);
+    });
+  }
+
   const inn = match.innings[ci];
 
   const needsStriker = !inn.striker;
@@ -65,6 +76,9 @@ export default function BatterSelectModal({ onClose }: Props) {
     } else if (needsNonStriker) {
       setNonStriker(name);
     }
+    
+    // Set style
+    setBatterStyle(name, battingStyle);
     
     // Check if we still need another batter (e.g. at start of innings)
     if (needsStriker && !inn.nonStriker) {
@@ -139,12 +153,33 @@ export default function BatterSelectModal({ onClose }: Props) {
           <label>Or enter new name</label>
           <input 
             type="text" 
+            list="historical-players"
             value={customName}
             onChange={(e) => { setCustomName(e.target.value); setSelected(''); }}
             placeholder="e.g. Rahul"
             maxLength={20}
             aria-label="Enter new batter name"
           />
+        </div>
+
+        <div className="field" style={{ marginBottom: 20 }}>
+          <label>Batting Style</label>
+          <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+            <button
+              className={`toss-btn ${battingStyle === 'RHB' ? 'active' : ''}`}
+              style={{ flex: 1, padding: '12px' }}
+              onClick={() => setBattingStyle('RHB')}
+            >
+              RIGHT HAND
+            </button>
+            <button
+              className={`toss-btn ${battingStyle === 'LHB' ? 'active' : ''}`}
+              style={{ flex: 1, padding: '12px' }}
+              onClick={() => setBattingStyle('LHB')}
+            >
+              LEFT HAND
+            </button>
+          </div>
         </div>
 
         {/* Validation warning */}

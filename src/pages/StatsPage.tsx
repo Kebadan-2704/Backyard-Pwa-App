@@ -22,6 +22,9 @@ export default function StatsPage() {
 
   const topBatters = [...allPlayers].sort((a, b) => b.batting.runs - a.batting.runs).slice(0, 5);
   const topBowlers = [...allPlayers].sort((a, b) => b.bowling.wickets - a.bowling.wickets).slice(0, 5);
+  const topFielders = [...allPlayers]
+    .filter(p => p.fielding && p.fielding.dismissals > 0)
+    .sort((a, b) => b.fielding.dismissals - a.fielding.dismissals).slice(0, 5);
 
   return (
     <div className="view-container">
@@ -157,6 +160,33 @@ export default function StatsPage() {
                   </button>
                 ))}
               </div>
+
+              {/* TOP FIELDERS (GOLDEN HANDS) */}
+              {topFielders.length > 0 && (
+                <div className="glass-card" style={{ padding: '0', overflow: 'hidden' }}>
+                  <div style={{ padding: '16px', borderBottom: '1px solid var(--border)', background: 'linear-gradient(90deg, rgba(46, 204, 113, 0.1), transparent)' }}>
+                    <h3 style={{ margin: 0, fontSize: 16, color: 'var(--green)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      🧤 Golden Hands (Dismissals)
+                    </h3>
+                  </div>
+                  {topFielders.map((p, idx) => (
+                    <button key={p.name} onClick={() => setSelectedPlayer(p)} style={{ width: '100%', display: 'flex', justifyContent: 'space-between', padding: '16px', borderBottom: '1px solid var(--border)', alignItems: 'center', background: 'transparent', border: 'none', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--border)', textAlign: 'left', cursor: 'pointer' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <div style={{ width: 24, fontWeight: 700, color: 'var(--text-secondary)' }}>{idx + 1}</div>
+                        <div>
+                          <div style={{ fontWeight: 600, fontSize: 16, color: 'var(--chalk)' }}>{p.name}</div>
+                          <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+                            {p.fielding.matches} M | Catches: {p.fielding.catches} | RO: {p.fielding.runOuts} | Stmp: {p.fielding.stumpings}
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: 'var(--green)' }}>
+                        {p.fielding.dismissals}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
             </>
           )}
         </div>

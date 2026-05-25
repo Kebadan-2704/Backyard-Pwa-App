@@ -27,6 +27,9 @@ function createEmptyPlayer(name: string): PlayerProfile {
       matches: 0, innings: 0, ballsBowled: 0, runsConceded: 0,
       wickets: 0, maidens: 0, fiveWicketHauls: 0,
       bestBowling: { wickets: 0, runs: 0 }
+    },
+    fielding: {
+      matches: 0, dismissals: 0, catches: 0, runOuts: 0, stumpings: 0
     }
   };
 }
@@ -94,12 +97,14 @@ export const useStatsStore = create<StatsStoreState>()(
                 bowling: { 
                   ...players[pName].bowling, 
                   bestBowling: { ...players[pName].bowling.bestBowling } 
-                }
+                },
+                fielding: { ...(players[pName].fielding || createEmptyPlayer(pName).fielding) }
               };
             }
             // Increment matches played
             players[pName].batting.matches += 1;
             players[pName].bowling.matches += 1;
+            players[pName].fielding.matches += 1;
           });
 
           // Update batting and bowling
@@ -117,6 +122,31 @@ export const useStatsStore = create<StatsStoreState>()(
                 else if (p.runs >= 50) b.fifties += 1;
                 if (p.runs > b.highestScore) b.highestScore = p.runs;
                 if (!p.howOut) b.notOuts += 1;
+              }
+              
+              // Fielding
+              if (p.fielderName) {
+                // We add the fielder to players if they don't exist yet
+                if (!players[p.fielderName]) {
+                  players[p.fielderName] = createEmptyPlayer(p.fielderName);
+                  // Assuming they played the match since they fielded
+                  players[p.fielderName].batting.matches += 1;
+                  players[p.fielderName].bowling.matches += 1;
+                  players[p.fielderName].fielding.matches += 1;
+                } else if (!players[p.fielderName].fielding) {
+                  players[p.fielderName].fielding = createEmptyPlayer(p.fielderName).fielding;
+                }
+                
+                const f = players[p.fielderName].fielding;
+                f.dismissals += 1;
+                
+                if (p.howOut.toLowerCase().includes('catch') || p.howOut.toLowerCase().includes('caught')) {
+                  f.catches += 1;
+                } else if (p.howOut.toLowerCase().includes('run out')) {
+                  f.runOuts += 1;
+                } else if (p.howOut.toLowerCase().includes('stumped')) {
+                  f.stumpings += 1;
+                }
               }
             });
 

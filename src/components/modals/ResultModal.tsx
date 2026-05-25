@@ -4,6 +4,7 @@ import { useMatchStore } from '../../store/matchStore';
 import { useHistoryStore } from '../../store/historyStore';
 import { shareViaWebShare, shareViaWhatsApp, captureScreenshot } from '../../utils/sharing';
 import { Trophy, Share2, MessageCircle, Copy, BarChart2 } from 'lucide-react';
+import MatchSummaryCard from '../MatchSummaryCard';
 import './Modals.css';
 
 interface Props {
@@ -47,7 +48,7 @@ export default function ResultModal({ onClose, onViewScorecard }: Props) {
     if (!match) return;
     if (type === 'web') shareViaWebShare(match);
     else if (type === 'whatsapp') shareViaWhatsApp(match);
-    else if (type === 'image') captureScreenshot('result-modal-content', match);
+    else if (type === 'image') captureScreenshot('match-summary-capture', match);
   }
 
   const isTie = match.winner === 'Match tied';
@@ -60,17 +61,9 @@ export default function ResultModal({ onClose, onViewScorecard }: Props) {
         
         <h2 style={{ fontSize: 32, marginBottom: 8, letterSpacing: 2 }}>MATCH OVER</h2>
         
-        <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--chalk)', margin: '16px 0', lineHeight: 1.2 }}>
-          {isTie || isAbandoned 
-            ? match.winner 
-            : `${match.winner} won`}
+        <div style={{ marginBottom: 24 }}>
+          <MatchSummaryCard match={match} id="match-summary-capture" />
         </div>
-        
-        {match.margin && (
-          <div style={{ fontSize: 18, color: 'var(--gold)', marginBottom: 24, fontWeight: 600 }}>
-            {match.margin}
-          </div>
-        )}
 
         {/* Man of the Match display */}
         {match.manOfTheMatch && (

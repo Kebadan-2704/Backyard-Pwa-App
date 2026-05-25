@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useMatchStore } from '../../store/matchStore';
+import { useHistoryStore } from '../../store/historyStore';
 import { calculateEconomy, getOversString, getTotalExtras, getExtrasBreakdown, getDotBallPercentage, getBestBatter, getBestBowler } from '../../utils/scoring';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LineChart, Line, Legend } from 'recharts';
 import { X, Trophy, Activity, TrendingUp, Target, Share2, Download, CircleDot } from 'lucide-react';
@@ -15,7 +16,26 @@ interface Props {
 
 export default function ScorecardModal({ onClose, initialInnings, matchData }: Props) {
   const storeMatch = useMatchStore((s) => s.match);
-  const match = matchData || storeMatch;
+  const matchProp = matchData || storeMatch;
+  const historyMatches = useHistoryStore((s) => s.matches);
+  
+  const parentMatch = matchProp?.parentMatchId ? historyMatches.find((m: any) => m.id === matchProp.parentMatchId) : null;
+  const childSuperOver = historyMatches.find((m: any) => m.parentMatchId === matchProp?.id);
+  const hasSuperOverContext = !!parentMatch || !!childSuperOver;
+
+  const [viewingContext, setViewingContext] = useState<'main' | 'superover'>(matchProp?.isSuperOver ? 'superover' : 'main');
+
+  // Determine which match object to display based on the context toggle
+  let match = matchProp;
+  if (hasSuperOverContext) {
+    if (viewingContext === 'superover') {
+      match = matchProp?.isSuperOver ? matchProp : childSuperOver;
+    } else {
+      match = matchProp?.isSuperOver ? parentMatch : matchProp;
+    }
+  }
+
+  // Effect to handle active innings reset when toggling context
   const [activeInnings, setActiveInnings] = useState(initialInnings ?? (match?.currentInnings ?? 0));
   const [activeTab, setActiveTab] = useState<'batting' | 'bowling' | 'fow' | 'charts' | 'highlights' | 'wagon'>('batting');
   const [selectedWWatter, setSelectedWWatter] = useState<string>('');
@@ -112,6 +132,26 @@ export default function ScorecardModal({ onClose, initialInnings, matchData }: P
             </button>
           </div>
         </div>
+
+        {/* Super Over Context Toggle */}
+        {hasSuperOverContext && (
+          <div style={{ display: 'flex', justifyContent: 'center', background: 'rgba(0,0,0,0.2)', padding: 8, gap: 8, margin: '0 -24px' }}>
+            <button 
+              className={`btn-secondary ${viewingContext === 'main' ? 'active' : ''}`}
+              style={{ background: viewingContext === 'main' ? 'var(--blue)' : 'transparent', color: viewingContext === 'main' ? 'white' : 'var(--text-secondary)', padding: '6px 16px', borderRadius: 20 }}
+              onClick={() => { setViewingContext('main'); setActiveInnings(0); }}
+            >
+              Main Match
+            </button>
+            <button 
+              className={`btn-secondary ${viewingContext === 'superover' ? 'active' : ''}`}
+              style={{ background: viewingContext === 'superover' ? 'var(--red)' : 'transparent', color: viewingContext === 'superover' ? 'white' : 'var(--text-secondary)', padding: '6px 16px', borderRadius: 20 }}
+              onClick={() => { setViewingContext('superover'); setActiveInnings(0); }}
+            >
+              Super Over
+            </button>
+          </div>
+        )}
 
         {/* Innings tabs */}
         {hasSecondInnings && (

@@ -65,6 +65,7 @@ export interface MatchState {
   // Player management
   setStriker: (name: string) => void;
   setNonStriker: (name: string) => void;
+  setBatterStyle: (name: string, style: 'RHB' | 'LHB') => void;
   setBowler: (name: string) => void;
   swapBatters: () => void;
   retireBatter: (type: 'hurt' | 'out') => void;
@@ -1085,6 +1086,17 @@ export const useMatchStore = create<MatchState>()(
           startPartnership(inn);
         }
         set({ match: m });
+      },
+
+      setBatterStyle: (name, style) => {
+        const { match } = get();
+        if (!match) return;
+        const m = structuredClone(match);
+        const inn = m.innings[m.currentInnings];
+        if (inn.batters[name]) {
+          inn.batters[name].battingStyle = style;
+          set({ match: m });
+        }
       },
 
       setBowler: (name) => {

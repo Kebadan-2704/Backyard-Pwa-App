@@ -9,6 +9,7 @@ import SplashScreen from './components/SplashScreen';
 import { useMatchStore } from './store/matchStore';
 import { syncLiveMatch, auth } from './lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+import { useStatsStore } from './store/statsStore';
 
 // Subscribe to store changes to sync with Firebase
 useMatchStore.subscribe((state) => {
@@ -63,6 +64,17 @@ function AuthWrapper({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function GlobalDatalist() {
+  const players = useStatsStore((s) => s.players);
+  return (
+    <datalist id="historical-players">
+      {Object.keys(players).map(p => (
+        <option key={p} value={p} />
+      ))}
+    </datalist>
+  );
+}
+
 export default function App() {
   const theme = useAppStore((s) => s.settings.theme);
   const fontSize = useAppStore((s) => s.settings.fontSize);
@@ -107,6 +119,7 @@ export default function App() {
   return (
     <div className="app-shell">
       <SplashScreen />
+      <GlobalDatalist />
       <header className="top-header">
         <div className="nav-brand">
           🏏 <span>Backyard</span> Cricket

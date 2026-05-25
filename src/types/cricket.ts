@@ -19,7 +19,7 @@ export type DismissalType =
 
 export type ExtraType = 'wide' | 'noball' | 'bye' | 'legbye' | 'penalty';
 
-export type MatchType = 'friendly' | 'league' | 'knockout' | 'superover' | 'hand_cricket' | 'book_cricket';
+export type MatchType = 'friendly' | 'league' | 'knockout' | 'superover';
 
 export type PitchCondition = '' | 'dry' | 'wet' | 'flat' | 'turning' | 'green' | 'dusty';
 
@@ -75,6 +75,7 @@ export interface BatterStats {
   retireType?: 'hurt' | 'out';
   minutesBatted: number;
   entryTime: number;
+  battingStyle?: 'RHB' | 'LHB';
 }
 
 export interface BowlerSpell {

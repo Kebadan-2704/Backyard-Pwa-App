@@ -42,7 +42,15 @@ export default function WicketModal({ onClose }: Props) {
 
   // Get fielding team players
   const fieldingTeamIdx = ci === 0 ? 1 : 0;
-  const fieldingPlayers = match.players ? match.players[fieldingTeamIdx] : [];
+  const fieldingPlayers = match.players ? [...match.players[fieldingTeamIdx]] : [];
+
+  // Include custom players added as batters in the first innings
+  if (ci === 1 && match.innings[0]) {
+    const prevBatters = Object.keys(match.innings[0].batters);
+    prevBatters.forEach(b => {
+      if (!fieldingPlayers.includes(b)) fieldingPlayers.push(b);
+    });
+  }
 
   function handleTypeChange(newType: DismissalType) {
     setType(newType);
@@ -147,6 +155,7 @@ export default function WicketModal({ onClose }: Props) {
                 </div>
                 <input 
                   type="text" 
+                  list="historical-players"
                   value={fielder}
                   onChange={(e) => setFielder(e.target.value)}
                   placeholder="Or type name..."

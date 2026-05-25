@@ -22,10 +22,19 @@ export interface PlayerBowlingStats {
   bestBowling: { wickets: number; runs: number };
 }
 
+export interface PlayerFieldingStats {
+  matches: number;
+  dismissals: number;
+  catches: number;
+  runOuts: number;
+  stumpings: number;
+}
+
 export interface PlayerProfile {
   name: string;
   batting: PlayerBattingStats;
   bowling: PlayerBowlingStats;
+  fielding: PlayerFieldingStats;
 }
 
 export interface TeamPoints {

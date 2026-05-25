@@ -18,7 +18,15 @@ export default function BowlerSelectModal({ onClose }: Props) {
 
   const ci = match.currentInnings;
   const bowlingTeamIdx = ci === 0 ? 1 : 0;
-  const teamPlayers = match.players ? match.players[bowlingTeamIdx] : [];
+  const teamPlayers = match.players ? [...match.players[bowlingTeamIdx]] : [];
+
+  // Include custom players added as batters in the first innings
+  if (ci === 1 && match.innings[0]) {
+    const prevBatters = Object.keys(match.innings[0].batters);
+    prevBatters.forEach(b => {
+      if (!teamPlayers.includes(b)) teamPlayers.push(b);
+    });
+  }
   const inn = match.innings[ci];
   const lastBowler = inn.overSummaries.length > 0 
     ? inn.overSummaries[inn.overSummaries.length - 1].bowler 
@@ -119,12 +127,16 @@ export default function BowlerSelectModal({ onClose }: Props) {
           <label>Or enter new name</label>
           <input 
             type="text" 
+            list="historical-players"
             value={customName}
             onChange={(e) => { setCustomName(e.target.value); setSelected(''); }}
             placeholder="e.g. Varun"
             maxLength={20}
             aria-label="Enter new bowler name"
           />
+          <datalist id="historical-players">
+            {allBowlers.map(p => <option key={p} value={p} />)}
+          </datalist>
         </div>
 
         <div className="modal-actions">
