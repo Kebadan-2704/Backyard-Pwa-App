@@ -135,7 +135,7 @@
 .coin-heads {
   background-color: var(--ink);
   background-image: url('/coins/heads.png');
-  background-size: 115% 115%;
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   color: transparent;
@@ -145,7 +145,7 @@
 .coin-tails {
   background-color: var(--ink);
   background-image: url('/coins/tails.png');
-  background-size: 115% 115%;
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   color: transparent;
